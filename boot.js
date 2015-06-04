@@ -52,7 +52,9 @@ define(
             switch (code) {
                 case 13: // enter
                     event.target.value = '';
-                    handlers.enterPressHandler(cmd);
+                    handlers.enterPressHandler(cmd, function () {
+                        console.log(core._commands[core._commands.length - 1]);
+                    });
                     break;
                 case 38:
                     handlers.upArrow();

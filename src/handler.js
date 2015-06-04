@@ -51,8 +51,9 @@ define(function (require) {
     /**
      * 回车键盘
      * @param {string} cmd 命令字符串
+     * @param {function} callback 命令执行结束的回调
      */
-    Handler.prototype.enterPressHandler = function (cmd) {
+    Handler.prototype.enterPressHandler = function (cmd, callback) {
         if (cmd === '') {
             return;
         }
@@ -60,15 +61,14 @@ define(function (require) {
             this.util.displayResult(cmd, true);
             if (cmd === 'Y' || cmd === 'y') {
                 this.core._confirm = 'Y';
-                cmd = this.core._commands[this.core._commands.length - 1];
-                cmd = this.util.formatCommand(cmd);
-                this.util.displayLocation(this.core._path);
-                this.core[cmd.__cmd__](cmd);
             }
             else {
-                this.core._confirm = '';
-                this.util.displayLocation(this.core._path);
+                this.core._confirm = 'N';
             }
+            cmd = this.core._commands[this.core._commands.length - 1];
+            cmd = this.util.formatCommand(cmd);
+            this.util.displayLocation(this.core._path);
+            this.core[cmd.__cmd__](cmd, callback);
             return;
         }
         else {
@@ -77,7 +77,7 @@ define(function (require) {
             this.util.displayResult(cmd, true);
             cmd = this.util.formatCommand(cmd);
             if (typeof this.core[cmd.__cmd__] === 'function') {
-                this.core[cmd.__cmd__](cmd);
+                this.core[cmd.__cmd__](cmd, callback);
             }
             else {
                 this.util.displayResult(cmd.__cmd__+ ' ' + this.language.notCommand);
