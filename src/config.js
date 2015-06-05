@@ -1,4 +1,6 @@
-
+/**
+ * 系统常量
+ */
 define(function (require) {
 
     return {

@@ -1,7 +1,7 @@
 /**
  * DIR命令执行单元
  */
-define(['template'], function (tpl) {
+define(['sys/template'], function (tpl) {
 
     /**
      * 命令执行与解析

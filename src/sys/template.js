@@ -1,4 +1,6 @@
-
+/**
+ * 模板引擎
+ */
 define(['doT'], function (doT) {
 
     var obj = {

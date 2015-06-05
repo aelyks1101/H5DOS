@@ -1,14 +1,17 @@
 /**
- * H5DOS 核心
- * 主要负责命令解析和系统流程控制
+ * H5DOS 内部命令核心
+ * 主要负责内部命令解析和系统流程控制
  */
 define(
-    ['config', 'language', 'util', 'template', 'cmds/dir'], 
-    function (config, Language, util, tpl, dir) {
-
-        var language = Language(config.language);
-
+    [
+        'config', 'util',
+        'sys/language', 'sys/template',
+        'sys/cmd/dir'
+    ], 
+    function (config, util, Language, tpl, dir) {
         return {
+            // 系统语言包
+            _language: Language(config.language),
             // 当前目录
             _path: '',
             // 命令集
@@ -115,7 +118,7 @@ define(
                 }
                 function exist() {
                     me._confirm = '?';
-                    util.displayConfirm(language['targetFileExist']);
+                    util.displayConfirm(me._language['targetFileExist']);
                 }
                 function isFile(fileEntry) {
                     me._isFile(dest + '/' + fileEntry.name, exist, exe);
@@ -264,7 +267,7 @@ define(
                 }
                 else {
                     this._confirm = '?';
-                    util.displayConfirm(language['deltree']);
+                    util.displayConfirm(this._language['deltree']);
                 }
             },
             /**
@@ -378,7 +381,7 @@ define(
                 }
                 function exist() {
                     me._confirm = '?';
-                    util.displayConfirm(language['targetFileExist']);
+                    util.displayConfirm(me._language['targetFileExist']);
                 }
                 function isFile(fileEntry) {
                     if (fileEntry.name === dest) {

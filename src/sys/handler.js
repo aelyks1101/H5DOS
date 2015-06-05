@@ -1,16 +1,20 @@
-
+/**
+ * 系统级别的交互事件
+ */
 define(function (require) {
 
     /**
      * 处理键盘事件和鼠标事件的句柄
      * @constructor
-     * @param {Object} core 命令解释运行核心
+     * @param {Object} core 内部命令运行核心
+     * @param {Object} app 应用程序运行核心
      * @param {Object} util 系统工具包
      */
-    function Handler(core, util, language) {
+    function Handler(core, app, util) {
         this.core = core;
         this.util = util;
-        this.language = language;
+        this.app = app;
+        this.language = core._language;
     }
     /**
      * 上键

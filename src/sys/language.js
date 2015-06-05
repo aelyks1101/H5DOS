@@ -1,4 +1,6 @@
-
+/**
+ * 语言包
+ */
 define(['config'], function (config) {
 
     function Language(lng) {

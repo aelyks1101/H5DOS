@@ -1,18 +1,20 @@
+// require 配置
 require.config({
-    baseUrl: "src",
     paths: {
-        doT: '/lib/doT',
-        filesystem: '/lib/filesystem',
-        config: '../config'
+        doT: '../lib/doT',
+        filesystem: '../lib/filesystem'
     }
 });
+// 主启动入口
 define(
-    ['config', 'language', 'util', 'core', 'filesystem', 'handler'],
-    function (config, Language, util, core, FileSystem, Handler) {
+    [
+        'config', 'util', 'app/main',
+        'sys/core', 'sys/handler' ,'filesystem'
+    ],
+    function (config, util, app, core, Handler, FileSystem) {
 
-        // 申请文件系统操作句柄
-        var language = Language(config.language);
-        var handlers = new Handler(core, util, language);
+        var handlers = new Handler(core, app, util);
+        var language = core._language;
         core._fs = new FileSystem({
             type: config.fsType,
             size: config.fsSize,
@@ -66,6 +68,5 @@ define(
                     break;
             }
         }
-
     }
 );
