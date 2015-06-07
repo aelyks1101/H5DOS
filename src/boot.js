@@ -8,30 +8,28 @@ require.config({
 // 主启动入口
 define(
     [
-        'config', 'util', 'app/main',
+        'config', 'util',
+        'app/main',
         'sys/core', 'sys/handler' ,'filesystem'
     ],
     function (config, util, app, core, Handler, FileSystem) {
-
         var handlers = new Handler(core, app, util);
         var language = core._language;
         core._fs = new FileSystem({
             type: config.fsType,
             size: config.fsSize,
             debug: config.fsDebug,
-            onSuccess: fsOnSuccessHandler,
-            onFail: fsOnFailHandler
+            onSuccess: fsSuccessHandler,
+            onFail: fsFailHandler
         });
         /**
          * 申请空间处理句柄
          * @param {Object} _fs 文件系统操作句柄
          */
-        function fsOnSuccessHandler(_fs) {
-            util.input.onblur = function () {
-                util.input.focus();
-            };
+        function fsSuccessHandler(_fs) {
             util.input.onkeyup = keyupHandler;
             util.input.focus();
+            util.displayScreen(false);
             util.displayLocation('');
             util.displayResult(language.welcome + _fs._fs.root.toURL() + '</div>');
         }
@@ -39,7 +37,7 @@ define(
          * 申请空间处理句柄
          * @param {Object} evt error对象
          */
-        function fsOnFailHandler(evt) {
+        function fsFailHandler(evt) {
             util.displayResult(evt.message);
         }
         /**

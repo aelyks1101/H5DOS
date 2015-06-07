@@ -58,6 +58,11 @@ define(function (require) {
      * @param {function} callback 命令执行结束的回调
      */
     Handler.prototype.enterPressHandler = function (cmd, callback) {
+        if (cmd === 'edit') {
+            var edit = new this.app.edit(this.util);
+            return;
+        }
+
         if (cmd === '') {
             return;
         }

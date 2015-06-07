@@ -6,6 +6,12 @@ body {
     font-weight: bold;
     font-family: 微软雅黑;
 }
+#screen {
+    background-color: #000;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+}
 #location {
     display: inline-block;
 }

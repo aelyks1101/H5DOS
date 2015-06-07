@@ -1,9 +1,13 @@
 /**
  * 工具集
  * 提供核心工具，对js原生对象进行扩展
- * 工具包中每个方法都不调用其他方法，但可能会使用output, location, input属性
+ * 工具包中每个方法都不调用其他方法，但可能会使用output, location, input, screen属性
  */
 define(function (require) {
+
+    var win = $(window);
+    var screen = $('#screen');
+
     /**
      * 日期格式化扩展
      * @param {Date} format 待格式化日期对象
@@ -33,6 +37,25 @@ define(function (require) {
         }
         return format;
     };
+
+    /**
+     * 命令行模式时，控制鼠标焦点的事件
+     * @param {Object} event 事件句柄
+     */
+    function commandBlurHandler(event) {
+        event.target.focus();
+    }
+    /**
+     * 界面窗体resize
+     * @param {Object} event 事件句柄
+     */
+    function windowResizeHandler(event) {
+        screen.css({
+            width: win.width() + 'px',
+            height: win.height() + 'px'
+        });
+    }
+
     /**
      * 返回工具包
      */
@@ -43,15 +66,8 @@ define(function (require) {
         location: document.getElementById('location'),
         // 主显示框
         input: document.getElementById('input'),
-        /**
-         * 在控制台输出对象的属性和属性值
-         * @param {Object} obj 待查看对象
-         */
-        log: function (obj) {
-            for (var key in obj) {
-                console.log(key+ ':' + obj[key]);
-            }
-        },
+        // 桌面显示器
+        screen: screen,
         /**
          * 拼接路径
          * 将当前路径与用户输入路径拼接成绝对路径，如用户输入相对路径，则将其合并到当前路径
@@ -138,6 +154,29 @@ define(function (require) {
             this.location.innerHTML = msg + '(Y/N):';
         },
         /**
+         * 显隐图形界面
+         * @param {boolean} show 显示/隐藏
+         */
+        displayScreen: function (show) {
+            if (show) {
+                this.input.onblur = null;
+                this.screen.css({
+                    width: win.width() + 'px',
+                    height:  win.height() + 'px'
+                });
+                window.onresize = windowResizeHandler;
+            }
+            else {
+                this.input.onblur = commandBlurHandler;
+                this.screen.html('').css({
+                    width: '0px',
+                    height: '0px'
+                });
+                this.input.focus();
+                window.onresize = null;
+            }
+        },
+        /**
          * 解析命令行
          * @param {string} cmd 用户输入的命令行
          * @return {Object} 命令对象
@@ -178,5 +217,4 @@ define(function (require) {
             return obj;
         }
     };
-
 });

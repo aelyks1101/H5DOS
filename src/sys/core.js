@@ -5,8 +5,8 @@
 define(
     [
         'config', 'util',
-        'sys/language', 'sys/template',
-        'sys/cmd/dir'
+        './language', './template',
+        './cmd/dir'
     ], 
     function (config, util, Language, tpl, dir) {
         return {

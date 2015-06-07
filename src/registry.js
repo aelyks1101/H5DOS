@@ -4,6 +4,15 @@
  */
 define(function (require) {
     return {
-        edit: 'abc'
+        // 应用程序注册信息
+        apps: {
+            'edit': {
+                docs: ['txt']
+            }
+        },
+        // 文件类型注册薪资
+        docs: {
+            'txt': ['edit']
+        }
     };
 });
