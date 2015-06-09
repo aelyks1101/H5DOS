@@ -22,6 +22,6 @@ define(['config'], function (config) {
         }
     }
     
-    return Language;
+    return Language(config.language);
 
 });

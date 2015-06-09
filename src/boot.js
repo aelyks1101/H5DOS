@@ -1,3 +1,4 @@
+/*global FileError, console*/
 // require 配置
 require.config({
     paths: {
@@ -10,7 +11,7 @@ define(
     [
         'config', 'util',
         'app/main',
-        'sys/core', 'sys/handler' ,'filesystem'
+        'sys/core', 'sys/handler', 'filesystem'
     ],
     function (config, util, app, core, Handler, FileSystem) {
         var handlers = new Handler(core, app, util);
@@ -47,8 +48,7 @@ define(
         function keyupHandler(event) {
             var code = event.which;
             var cmd = event.target.value;
-            var count = cmd.replace(/[^\u0000-\u00ff]/g,"aa").length;
-            event.target.size = count + 2;
+            util.inputResize();
             switch (code) {
                 case 13: // enter
                     event.target.value = '';
@@ -62,7 +62,7 @@ define(
                 case 40:
                     handlers.downArrow();
                     break;
-                default: 
+                default:
                     break;
             }
         }

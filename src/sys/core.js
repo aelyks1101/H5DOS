@@ -8,10 +8,10 @@ define(
         './language', './template',
         './cmd/dir'
     ], 
-    function (config, util, Language, tpl, dir) {
+    function (config, util, language, tpl, dir) {
         return {
             // 系统语言包
-            _language: Language(config.language),
+            _language: language,
             // 当前目录
             _path: '',
             // 命令集

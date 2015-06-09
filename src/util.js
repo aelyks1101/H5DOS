@@ -1,5 +1,5 @@
 /**
- * 工具集
+ * 工具集 + 最底层事件触发处理
  * 提供核心工具，对js原生对象进行扩展
  * 工具包中每个方法都不调用其他方法，但可能会使用output, location, input, screen属性
  */
@@ -7,12 +7,14 @@ define(function (require) {
 
     var win = $(window);
     var screen = $('#screen');
+    var screenResizeHandler = null;
+    var screenKeydownHandler = null;
 
     /**
      * 日期格式化扩展
      * @param {Date} format 待格式化日期对象
      */
-    Date.prototype.format = function(format){ 
+    Date.prototype.format = function (format) { 
         var o = {
             "M+": this.getMonth() + 1,
             "D+": this.getDate(),
@@ -45,15 +47,44 @@ define(function (require) {
     function commandBlurHandler(event) {
         event.target.focus();
     }
+
     /**
-     * 界面窗体resize
+     * 系统按键事件
+     */
+    function windowKeydownHandler(evt) {
+        var key = {
+            alt: evt.altKey,
+            ctrl: evt.ctrlKey,
+            code: evt.keyCode
+        }
+        if (typeof screenKeydownHandler === 'function') {
+            screenKeydownHandler(key);
+        }
+        if (
+            (evt.ctrlKey && evt.keyCode === 83) ||
+            (evt.ctrlKey && evt.keyCode === 78)
+        ) {
+            return false;
+        }
+    }
+
+    /**
+     * 界面窗体resize事件
      * @param {Object} event 事件句柄
      */
     function windowResizeHandler(event) {
+        var w = win.width();
+        var h = win.height();
         screen.css({
-            width: win.width() + 'px',
-            height: win.height() + 'px'
+            width: w + 'px',
+            height: h + 'px'
         });
+        if (typeof screenResizeHandler === 'function') {
+            screenResizeHandler({
+                width: w,
+                height: h
+            });
+        }
     }
 
     /**
@@ -68,6 +99,50 @@ define(function (require) {
         input: document.getElementById('input'),
         // 桌面显示器
         screen: screen,
+        /**
+         * 检查文件名合法性
+         * @param {string} str 文件名
+         * @return {boolean} 是否合法
+         */
+        checkFilename: function (str) {
+            var enable = true;
+            var chars = ['\\', '/', ':', '*', '?' ,'"', '<', '>', '\''];
+            if (str.length === 0) {
+                return false;
+            }
+            for (var n = 0; n < chars.length; n++) {
+                if (str.indexOf(chars[n]) > -1) {
+                    enable = false;
+                    break;
+                }
+            }
+            return enable;
+        },
+        /**
+         * 绑定作用域
+         * @param {object} 作用域对象
+         * @param {function} handler函数
+         * @return {function} 作用域绑定函数
+         */
+        bind: function (obj, func) {
+            return function (evt) {
+                func.call(obj, evt);
+            };
+        },
+        /**
+         * 桌面resize分发句柄注册
+         * @param {function | null} func 事件句柄
+         */
+        onScreenResize: function (func) {
+            screenResizeHandler = func;
+        },
+        /**
+         * 桌面键盘事件句柄
+         * @param {function | null} func 事件句柄
+         */
+        onKeyDown: function (func) {
+            screenKeydownHandler = func;
+        },
         /**
          * 拼接路径
          * 将当前路径与用户输入路径拼接成绝对路径，如用户输入相对路径，则将其合并到当前路径
@@ -140,6 +215,12 @@ define(function (require) {
             this.input.value = cmd;
         },
         /**
+         * 修改input的长度
+         */
+        inputResize: function () {
+            this.input.size = this.input.value.replace(/[^\u0000-\u00ff]/g,"aa").length + 2;
+        },
+        /**
          * 修改目录
          * @param {string} loc 当前路径
          */
@@ -165,6 +246,7 @@ define(function (require) {
                     height:  win.height() + 'px'
                 });
                 window.onresize = windowResizeHandler;
+                $(document).bind('keydown', windowKeydownHandler);
             }
             else {
                 this.input.onblur = commandBlurHandler;
@@ -174,6 +256,7 @@ define(function (require) {
                 });
                 this.input.focus();
                 window.onresize = null;
+                $(document).unbind('keydown');
             }
         },
         /**
