@@ -5,6 +5,7 @@ define(['config'], function (config) {
                 newfile: 'New',
                 save: 'Save',
                 quit: 'Quit',
+                discardchange: 'Do you want to save the file?',
                 unsaved: 'Are you sure to quit without saving the file?',
                 noname: 'Please input file name.',
                 fileexist: ' does exist, overwrite it?',

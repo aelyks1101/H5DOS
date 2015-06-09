@@ -78,16 +78,30 @@ define(
         /**
          * 新建
          */
-        function newFile(callback) {
-            app.file = '';
-            app.content = '';
-            value('');
+        function newFile() {
+            var content = value();
+            if (app.content === content) {
+                app.file = '';
+                app.content = '';
+                value('');
+            }
+            else {
+                if (window.confirm(language.discardchange)) {
+                    save(newFile);
+                }
+                else {
+                    app.file = '';
+                    app.content = '';
+                    value('');
+                }
+            }
         }
 
         /**
          * 保存
+         * @param {function} callback 保存成功后的回调
          */
-        function save() {
+        function save(callback) {
             var content = value();
             if (app.content === content) {
                 return;
@@ -108,6 +122,9 @@ define(
                 }
                 else {
                     app.content = content;
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
                 }
             }
         }
