@@ -10,7 +10,7 @@ define(function (require) {
                 docs: ['txt']
             }
         },
-        // 文件类型注册薪资
+        // 文件类型注册信息
         docs: {
             'txt': ['edit']
         }

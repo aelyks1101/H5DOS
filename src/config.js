@@ -5,7 +5,7 @@ define(function (require) {
 
     return {
         // 版本号
-        version: '0.1.0603',
+        version: '0.1.0610',
         // 语言
         language: 'en',
         // 文件系统类型

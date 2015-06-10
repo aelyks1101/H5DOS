@@ -11,7 +11,9 @@ define(['config'], function (config) {
                     + 'or view files in your browser:<br><div class="fs-url">',
                 notCommand: 'is not an internal command or an external command.',
                 targetFileExist: 'The target file already exists, overwrite it?',
-                deltree: 'Are you sure to delete the directory?'
+                deltree: 'Are you sure to delete the directory?',
+                cantOpen: 'can not be opened.',
+                regError: 'Configuration error in registry make the file can not be opened.'
             }
         };
         if (obj[lng]) {
