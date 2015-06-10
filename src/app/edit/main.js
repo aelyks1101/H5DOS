@@ -35,6 +35,9 @@ define(
 
         // 绑定上下文
         for (var key in handler) {
+            if (typeof handler[key] !== 'function') {
+                continue;
+            }
             handler[key] = util.bind(app, handler[key]);
         }
 
@@ -68,7 +71,7 @@ define(
             util.screen.find('.content')[0].focus();
             // 初始化界面
             resize({
-                width: util.screen.width(), 
+                width: util.screen.width(),
                 height: util.screen.height()
             });
             // 打开文件
@@ -99,7 +102,7 @@ define(
 
         /**
          * 保存
-         * @param {function} callback 保存成功后的回调
+         * @param {Function} callback 保存成功后的回调
          */
         function save(callback) {
             var content = value();
@@ -146,11 +149,11 @@ define(
 
         /**
          * 用户输入文件名
-         * @param {function} callback 输入的文件名合法后的回调
+         * @param {Function} callback 输入的文件名合法后的回调
          */
         function inputFilename(callback) {
             var file;
-            input(language.noname); 
+            input(language.noname);
             function input(msg) {
                 file = window.prompt(msg);
                 if (typeof file === 'string') {
@@ -187,14 +190,16 @@ define(
          * @return {string} 编辑器内容的utf8字符串
          */
         function value(str) {
+            var v = '';
             if (typeof str === 'string') {
                 app.content = str;
                 util.screen.find('.content').val(str);
-                return null;
+                v = null;
             }
             else {
-                return util.screen.find('.content')[0].value;
+                v = util.screen.find('.content')[0].value;
             }
+            return v;
         }
 
         /**

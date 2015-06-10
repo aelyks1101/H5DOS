@@ -1,4 +1,4 @@
-/*global FileError, console*/
+/*global console*/
 // require 配置
 require.config({
     paths: {
@@ -52,14 +52,12 @@ define(
             switch (code) {
                 case 13: // enter
                     event.target.value = '';
-                    handlers.enterPressHandler(cmd, function () {
-                        console.log(core._commands[core._commands.length - 1]);
-                    });
+                    handlers.enterPressHandler(cmd);
                     break;
-                case 38:
+                case 38: // up
                     handlers.upArrow();
                     break;
-                case 40:
+                case 40: // down
                     handlers.downArrow();
                     break;
                 default:

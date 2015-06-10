@@ -7,7 +7,7 @@ define(
         'config', 'util',
         './language', './template',
         './cmd/dir'
-    ], 
+    ],
     function (config, util, language, tpl, dir) {
         return {
             // 系统语言包
@@ -24,13 +24,13 @@ define(
             _confirm: '',
             /**
              * 错误检测，同时负责错误信息屏显
-             * @param {Object} fs回调回传
-             * @param {Boolean} dontdisplay 是否不显示
-             * @return {Boolean} 是否为错误信息
+             * @param {Object} evt fs回调回传
+             * @param {boolean} dontdisplay 是否不显示
+             * @return {boolean} 是否为错误信息
              */
             _isOK: function (evt, dontdisplay) {
                 var isOK = true;
-                if (evt instanceof FileError || evt.error) {
+                if (evt.error) {
                     isOK = false;
                     var msg = evt.message;
                     if (msg.length === 0) {
@@ -54,8 +54,8 @@ define(
             /**
              * 检测文件是否存在
              * @param {string} path 路径
-             * @param {function} is 存在的回调
-             * @param {function} not 不存在的回调
+             * @param {Function} is 存在的回调
+             * @param {Function} not 不存在的回调
              */
             _isFile: function (path, is, not) {
                 var me = this;
@@ -70,13 +70,13 @@ define(
                             not(evt);
                         }
                     }
-                };
+                }
                 me._fs.open(path, gotEntry);
             },
             /**
              * 产生callback闭包，封装判断逻辑
-             * @param {function} callback 原始函数
-             * @return {function} 闭包
+             * @param {Function} callback 原始函数
+             * @return {Function} 闭包
              */
             _closeCallback: function (callback) {
                 return function (evt) {
@@ -90,7 +90,7 @@ define(
              * 此方法包含了复制或移动文件的通用判断流程
              * @param {Object} cmd 命令对象
              * @param {string} type 通用命令名
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             _copyOrMove: function (cmd, type, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -118,7 +118,7 @@ define(
                 }
                 function exist() {
                     me._confirm = '?';
-                    util.displayConfirm(me._language['targetFileExist']);
+                    util.displayConfirm(me._language['target-file-exist']);
                 }
                 function isFile(fileEntry) {
                     me._isFile(dest + '/' + fileEntry.name, exist, exe);
@@ -129,7 +129,7 @@ define(
              * md, rd, del
              * @param {Object} cmd 命令对象
              * @param {string} func 通用命令名
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             _singleArgument: function (cmd, func, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -144,7 +144,7 @@ define(
                         util.displayLocation(me._path);
                     }
                     callbackHandler(evt);
-                };
+                }
                 me._fs[func](path, gotEntry);
             },
             /**
@@ -153,7 +153,7 @@ define(
              * @param {string} argm1 第一个路径
              * @param {string} argm2 第二个路径
              * @param {string} func 通用命令名
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             _doubleArguments: function (argm1, argm2, func, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -167,7 +167,7 @@ define(
                         util.displayLocation(me._path);
                     }
                     callbackHandler(evt);
-                };
+                }
                 me._fs[func](argm1, argm2, gotEntry);
             },
 
@@ -175,7 +175,7 @@ define(
             /**
              * help
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             help: function (cmd, callback) {
                 var arr = [];
@@ -192,7 +192,7 @@ define(
             /**
              * ver
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             ver: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -202,7 +202,7 @@ define(
             /**
              * time
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             time: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -219,7 +219,7 @@ define(
             /**
              * date
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             date: function (cmd, callback) {
                 this.time(cmd, callback);
@@ -227,7 +227,7 @@ define(
             /**
              * cls
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             cls: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -237,7 +237,7 @@ define(
             /**
              * md
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             md: function (cmd, callback) {
                 this._singleArgument(cmd, 'md', callback);
@@ -245,7 +245,7 @@ define(
             /**
              * rd
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             rd: function (cmd, callback) {
                 this._singleArgument(cmd, 'rd', callback);
@@ -253,7 +253,7 @@ define(
             /**
              * deltree
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             deltree: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -267,13 +267,13 @@ define(
                 }
                 else {
                     this._confirm = '?';
-                    util.displayConfirm(this._language['deltree']);
+                    util.displayConfirm(this._language['del-tree']);
                 }
             },
             /**
              * dir
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             dir: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -288,13 +288,13 @@ define(
                         dir(cmd, evt, util.displayResult);
                     }
                     callbackHandler(evt);
-                };
+                }
                 me._fs.dir(path, gotEntries);
             },
             /**
              * cd
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             cd: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -310,13 +310,13 @@ define(
                         util.displayLocation(path);
                     }
                     callbackHandler(evt);
-                };
+                }
                 me._fs.cd(path, gotEntry);
             },
             /**
              * del
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             del: function (cmd, callback) {
                 this._singleArgument(cmd, 'del', callback);
@@ -324,7 +324,7 @@ define(
             /**
              * move
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             move: function (cmd, callback) {
                 this._copyOrMove(cmd, 'move', callback);
@@ -332,7 +332,7 @@ define(
             /**
              * copy
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             copy: function (cmd, callback) {
                 this._copyOrMove(cmd, 'copy', callback);
@@ -340,7 +340,7 @@ define(
             /**
              * ren
              * @param {Object} cmd 命令对象
-             * @param {function} callback 命令执行后的回调
+             * @param {Function} callback 命令执行后的回调
              */
             ren: function (cmd, callback) {
                 var callbackHandler = this._closeCallback(callback);
@@ -363,7 +363,7 @@ define(
                     me._confirm = '';
                     exe();
                 }
-                else if (me._confirm === 'N' ) {
+                else if (me._confirm === 'N') {
                     me._confirm = '';
                     callbackHandler({});
                 }
@@ -381,7 +381,7 @@ define(
                 }
                 function exist() {
                     me._confirm = '?';
-                    util.displayConfirm(me._language['targetFileExist']);
+                    util.displayConfirm(me._language['target-file-exist']);
                 }
                 function isFile(fileEntry) {
                     if (fileEntry.name === dest) {

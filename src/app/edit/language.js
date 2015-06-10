@@ -1,5 +1,5 @@
 define(['config'], function (config) {
-    function Language(lng) {
+    function language(lng) {
         var obj = {
             en: {
                 newfile: 'New',
@@ -10,15 +10,17 @@ define(['config'], function (config) {
                 noname: 'Please input file name.',
                 fileexist: ' does exist, overwrite it?',
                 unablename: 'These chars can not be used in file name:\n' +
-                    '          \\/:*?" <>\'',
+                    '          \\/:*?" <>\''
             }
         };
+        var rlng = {};
         if (obj[lng]) {
-            return obj[lng];
+            rlng = obj[lng];
         }
         else {
-            return obj.en;
+            rlng = obj.en;
         }
+        return rlng;
     }
-    return Language(config.language);
+    return language(config.language);
 });

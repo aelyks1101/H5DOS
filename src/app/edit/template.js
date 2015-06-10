@@ -11,6 +11,9 @@ define(['doT'], function (doT) {
         ]
     };
     for (var key in obj) {
+        if (key.indexOf('_') > -1) {
+            continue;
+        }
         obj[key] = doT.template(obj[key].join(''), undefined);
     }
     return obj;

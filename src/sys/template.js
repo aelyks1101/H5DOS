@@ -1,5 +1,7 @@
 /**
  * 模板引擎
+ * @param {Object} doT 模板解析引擎
+ * @return {Object} 模板对象
  */
 define(['doT'], function (doT) {
 
@@ -38,6 +40,9 @@ define(['doT'], function (doT) {
     };
 
     for (var key in obj) {
+        if (key.indexOf('_') > -1) {
+            continue;
+        }
         obj[key] = doT.template(obj[key].join(''), undefined);
     }
 

@@ -1,5 +1,7 @@
 /**
  * 系统级别的交互事件
+ * @param {Function} require require包
+ * @return {Function} handler构造函数
  */
 define(function (require) {
 
@@ -60,7 +62,7 @@ define(function (require) {
     /**
      * 回车键盘
      * @param {string} cmd 命令字符串
-     * @param {function} callback 命令执行结束的回调，只执行系统命令时有回调。
+     * @param {Function} callback 命令执行结束的回调，只执行系统命令时有回调。
      */
     Handler.prototype.enterPressHandler = function (cmd, callback) {
         if (cmd === '') {
@@ -106,7 +108,7 @@ define(function (require) {
          */
         function isFile(evt) {
             if (evt.error) {
-                me.util.displayResult(cmd.__cmd__+ ' ' + me.language.notCommand);
+                me.util.displayResult(cmd.__cmd__ + ' ' + me.language.notCommand);
             }
             else {
                 if (evt.name.indexOf('.') > -1) {

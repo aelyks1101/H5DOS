@@ -1,5 +1,7 @@
 /**
  * 系统常量
+ * @param {Function} require require方法
+ * @return {Object} 系统配置对象
  */
 define(function (require) {
 

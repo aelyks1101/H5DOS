@@ -1,7 +1,8 @@
 /**
  * 简易编辑器主接口
+ * @return {Function} bat执行器接口
  */
-define(function (require) {
+define(function () {
     /**
      * 初始化
      * @param {string} path bat文件绝对路径
@@ -20,7 +21,7 @@ define(function (require) {
         /**
          * 执行命令
          * @param {number} index 当前执行的序列
-         * @param {array} cmds 命令队列
+         * @param {Array} cmds 命令队列
          */
         function exe(index, cmds) {
             if (index >= cmds.length) {
@@ -32,7 +33,7 @@ define(function (require) {
                 core[cmd.__cmd__](cmd, done);
             }
             else {
-                util.displayResult(cmd.__cmd__+ ' ' + core._language.notCommand);
+                util.displayResult(cmd.__cmd__ + ' ' + core._language.notCommand);
             }
             function done() {
                 exe(index + 1, cmds);

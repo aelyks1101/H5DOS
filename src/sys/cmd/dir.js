@@ -1,5 +1,7 @@
 /**
  * DIR命令执行单元
+ * @param {Object} tpl 模板引擎
+ * @return {Function} dir命令解析器
  */
 define(['sys/template'], function (tpl) {
 
@@ -7,7 +9,7 @@ define(['sys/template'], function (tpl) {
      * 命令执行与解析
      * @param {Object} cmd 命令对象
      * @param {Array} entries 目录entries列表
-     * @param {Function} callback 显示回调 
+     * @param {Function} callback 显示回调
      */
     function dir(cmd, entries, callback) {
         // 分析命令参数
@@ -61,16 +63,16 @@ define(['sys/template'], function (tpl) {
         }
         else {
             var file = entries[index];
-            var info = {};
-            info.name = file.name;
-            info.isDirectory = file.isDirectory;
-            function gotMeta(e) {
+            var info = {
+                name: file.name,
+                isDirectory: file.isDirectory
+            };
+            file.getMetadata(function (e) {
                 info.size = e.size;
                 info.time = e.modificationTime;
                 data.push(info);
-                readNormalTree(entries, callback, index + 1, data); 
-            };
-            file.getMetadata(gotMeta);
+                readNormalTree(entries, callback, index + 1, data);
+            });
         }
     }
 

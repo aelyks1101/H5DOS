@@ -2,6 +2,8 @@
  * 工具集 + 最底层事件触发处理
  * 提供核心工具，对js原生对象进行扩展
  * 工具包中每个方法都不调用其他方法，但可能会使用output, location, input, screen属性
+ * @param {Function} require require方法
+ * @return {Object} util工具包
  */
 define(function (require) {
 
@@ -13,16 +15,18 @@ define(function (require) {
     /**
      * 日期格式化扩展
      * @param {Date} format 待格式化日期对象
+     * @return {string} 格式化后的时间串
      */
-    Date.prototype.format = function (format) { 
+    /* eslint-disable */
+    Date.prototype.format = function (format) {
         var o = {
-            "M+": this.getMonth() + 1,
-            "D+": this.getDate(),
-            "h+": this.getHours(),
-            "m+": this.getMinutes(),
-            "s+": this.getSeconds(),
-            "c+": this.getMilliseconds()
-        }
+            'M+': this.getMonth() + 1,
+            'D+': this.getDate(),
+            'h+': this.getHours(),
+            'm+': this.getMinutes(),
+            's+': this.getSeconds(),
+            'c+': this.getMilliseconds()
+        };
         if (/(Y+)/.test(format)) {
             format = format.replace(
                 RegExp.$1,
@@ -30,16 +34,16 @@ define(function (require) {
             );
         }
         for (var k in o) {
-            if (new RegExp("(" + k + ")").test(format)) {
+            if (new RegExp('(' + k + ')').test(format)) {
                 format = format.replace(
                     RegExp.$1,
-                    RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
+                    RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
                 );
             }
         }
         return format;
     };
-
+    /* eslint-enable */
     /**
      * 命令行模式时，控制鼠标焦点的事件
      * @param {Object} event 事件句柄
@@ -50,13 +54,15 @@ define(function (require) {
 
     /**
      * 系统按键事件
+     * @param {Object} evt 键盘事件
+     * @return {boolean} 阻止冒泡
      */
     function windowKeydownHandler(evt) {
         var key = {
             alt: evt.altKey,
             ctrl: evt.ctrlKey,
             code: evt.keyCode
-        }
+        };
         if (typeof screenKeydownHandler === 'function') {
             screenKeydownHandler(key);
         }
@@ -106,7 +112,7 @@ define(function (require) {
          */
         checkFilename: function (str) {
             var enable = true;
-            var chars = ['\\', '/', ':', '*', '?' ,'"', '<', '>', '\''];
+            var chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '\''];
             if (str.length === 0) {
                 return false;
             }
@@ -120,9 +126,9 @@ define(function (require) {
         },
         /**
          * 绑定作用域
-         * @param {object} 作用域对象
-         * @param {function} handler函数
-         * @return {function} 作用域绑定函数
+         * @param {Object} obj 作用域对象
+         * @param {Function} func 待绑定函数
+         * @return {Function} 作用域绑定函数
          */
         bind: function (obj, func) {
             return function (evt) {
@@ -218,7 +224,7 @@ define(function (require) {
          * 修改input的长度
          */
         inputResize: function () {
-            this.input.size = this.input.value.replace(/[^\u0000-\u00ff]/g,"aa").length + 2;
+            this.input.size = this.input.value.replace(/[^\u0000-\u00ff]/g, 'aa').length + 2;
         },
         /**
          * 修改目录
@@ -243,7 +249,7 @@ define(function (require) {
                 this.input.onblur = null;
                 this.screen.css({
                     width: win.width() + 'px',
-                    height:  win.height() + 'px'
+                    height: win.height() + 'px'
                 });
                 window.onresize = windowResizeHandler;
                 $(document).bind('keydown', windowKeydownHandler);
@@ -266,11 +272,11 @@ define(function (require) {
          */
         formatCommand: function (cmd) {
             var obj = {
-                '__cmd__' :'',
-                '__arguments__': []
+                __cmd__: '',
+                __arguments__: []
             };
             if (typeof cmd !== 'string' || cmd.length === 0) {
-                obj['__cmd__'] = '';
+                obj.__cmd__ = '';
             }
             else {
                 var arr = cmd.split(' ');
@@ -284,7 +290,7 @@ define(function (require) {
                         continue;
                     }
                     else {
-                        obj['__arguments__'].push(key);
+                        obj.__arguments__.push(key);
                     }
                 }
             }
