@@ -6,13 +6,13 @@ define(function (require) {
     return {
         // 应用程序注册信息
         apps: {
-            'edit': {
-                docs: ['txt']
-            }
+            'edit': {},
+            'bat': {}
         },
         // 文件类型注册信息
         docs: {
-            'txt': ['edit']
+            'txt': ['edit'],
+            'bat': ['bat']
         }
     };
 });

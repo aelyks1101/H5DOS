@@ -4,7 +4,8 @@
 define(
     [
         'require', 'registry',
-        'app/edit/main'
+        'app/edit/main',
+        'app/bat/main'
     ],
     function (require, reg) {
         var exp = {};

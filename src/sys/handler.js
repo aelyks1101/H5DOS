@@ -60,7 +60,7 @@ define(function (require) {
     /**
      * 回车键盘
      * @param {string} cmd 命令字符串
-     * @param {function} callback 命令执行结束的回调
+     * @param {function} callback 命令执行结束的回调，只执行系统命令时有回调。
      */
     Handler.prototype.enterPressHandler = function (cmd, callback) {
         if (cmd === '') {
@@ -84,7 +84,10 @@ define(function (require) {
                 me.core[cmd.__cmd__](cmd, callback);
             }
             // 应用命令
-            else if (typeof me.app[cmd.__cmd__] === 'function') {
+            else if (
+                typeof me.app[cmd.__cmd__] === 'function'
+                && cmd.__cmd__ !== 'bat'
+            ) {
                 me.app[cmd.__cmd__](
                     me.core._path,
                     cmd.__arguments__.length > 0
@@ -107,25 +110,37 @@ define(function (require) {
             }
             else {
                 if (evt.name.indexOf('.') > -1) {
-                    var arr = evt.name.split('.');
-                    var type = arr[arr.length - 1];
-                    var reg = me.app.__registry__;
-                    if (reg.docs[type] instanceof Array && reg.docs[type].length > 0) {
-                        var app = reg.docs[type][0];
-                        if (typeof me.app[app] === 'function') {
-                            me.app[app](me.core._path, evt.name, me.core._fs);
-                        }
-                        else {
-                            me.util.displayResult(me.language.regError);
-                        }
-                    }
-                    else {
-                        me.util.displayResult(evt.name + ' ' + me.language.cantOpen);
-                    }
+                    callApp(evt);
                 }
                 else {
                     me.util.displayResult(evt.name + ' ' + me.language.cantOpen);
                 }
+            }
+        }
+        /**
+         * 根据文件调用app
+         * @param {Object} evt 文件句柄
+         */
+        function callApp(evt) {
+            var arr = evt.name.split('.');
+            var type = arr[arr.length - 1];
+            var reg = me.app.__registry__;
+            if (reg.docs[type] instanceof Array && reg.docs[type].length > 0) {
+                var app = reg.docs[type][0];
+                if (typeof me.app[app] === 'function') {
+                    if (app === 'bat') {
+                        me.app[app](evt.fullPath, me.core, me.util);
+                    }
+                    else {
+                        me.app[app](me.core._path, evt.name, me.core._fs);
+                    }
+                }
+                else {
+                    me.util.displayResult(me.language.regError);
+                }
+            }
+            else {
+                me.util.displayResult(evt.name + ' ' + me.language.cantOpen);
             }
         }
     };
