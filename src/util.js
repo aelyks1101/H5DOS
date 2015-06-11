@@ -103,6 +103,8 @@ define(function (require) {
         location: document.getElementById('location'),
         // 主显示框
         input: document.getElementById('input'),
+        // 上传框
+        upload: document.getElementById('uploader'),
         // 桌面显示器
         screen: screen,
         /**

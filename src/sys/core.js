@@ -4,11 +4,11 @@
  */
 define(
     [
-        'config', 'util',
+        'config', 'util', 'registry',
         './language', './template',
-        './cmd/dir'
+        './cmd/main'
     ],
-    function (config, util, language, tpl, dir) {
+    function (config, util, reg, language, tpl, cmdHandler) {
         return {
             // 系统语言包
             _language: language,
@@ -171,6 +171,7 @@ define(
                 me._fs[func](argm1, argm2, gotEntry);
             },
 
+
             // 以下为对外命令接口
             /**
              * help
@@ -185,6 +186,12 @@ define(
                         continue;
                     }
                     arr.push(key);
+                }
+                for (var app in reg.apps) {
+                    if (reg.apps[app].visible === false) {
+                        continue;
+                    }
+                    arr.push(app);
                 }
                 util.displayResult(tpl['help-list']({data: arr}));
                 callbackHandler({});
@@ -285,7 +292,7 @@ define(
                 function gotEntries(evt) {
                     if (me._isOK(evt)) {
                         cmd.__path__ = path;
-                        dir(cmd, evt, util.displayResult);
+                        cmdHandler.dir(cmd, evt, util.displayResult);
                     }
                     callbackHandler(evt);
                 }
@@ -394,6 +401,27 @@ define(
                         me._isFile(target, exist, exe);
                     }
                 }
+            },
+            /**
+             * upload
+             * @param {Object} cmd 命令对象
+             * @param {Function} callback 命令执行后的回调
+             */
+            upload: function (cmd, callback) {
+                var me = this;
+                util.upload.onchange = function (evt) {
+                    cmdHandler.uploader(
+                        evt.target.files,           // 文件列表
+                        util,                       // 工具集
+                        me,                         // 核心
+                        function (result) {         // 上传完毕的回调
+                            evt.target.value = '';
+                            util.displayResult(tpl['upload-result'](result));
+                        }
+                    );
+                    util.upload.onchange = null;
+                };
+                util.upload.click();
             }
         };
     }

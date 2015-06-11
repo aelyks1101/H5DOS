@@ -6,6 +6,13 @@
 define(['doT'], function (doT) {
 
     var obj = {
+        'upload-result': [
+            '{{if(it.error){}}',
+            '<div>File System Crashed!</div>',
+            '{{}else{}}',
+            '<div>Success: {{=it.success.length}}; Fail: {{=it.fail.length}}</div>',
+            '{{}}}'
+        ],
         'dir-path': [
             '<div>{{=it.path}}</div>'
         ],

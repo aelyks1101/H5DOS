@@ -9,7 +9,9 @@ define(function (require) {
         // 应用程序注册信息
         apps: {
             'edit': {},
-            'bat': {}
+            'bat': {
+                visible: false // 不在help命令里显示
+            }
         },
         // 文件类型注册信息
         docs: {

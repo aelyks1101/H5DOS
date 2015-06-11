@@ -88,7 +88,7 @@ define(function (require) {
             // 应用命令
             else if (
                 typeof me.app[cmd.__cmd__] === 'function'
-                && cmd.__cmd__ !== 'bat'
+                && me.app.__registry__.apps[cmd.__cmd__].visible !== false
             ) {
                 me.app[cmd.__cmd__](
                     me.core._path,
