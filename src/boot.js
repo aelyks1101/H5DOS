@@ -2,8 +2,10 @@
 // require 配置
 require.config({
     paths: {
+        zip: '../lib/jszip.min',
+        saver: '../lib/FileSaver',
         doT: '../lib/doT',
-        filesystem: '../lib/filesystem'
+        filesystem: '../lib/FileSystem'
     }
 });
 // 主启动入口

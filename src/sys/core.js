@@ -410,7 +410,7 @@ define(
             upload: function (cmd, callback) {
                 var me = this;
                 util.upload.onchange = function (evt) {
-                    cmdHandler.uploader(
+                    cmdHandler.upload(
                         evt.target.files,           // 文件列表
                         util,                       // 工具集
                         me,                         // 核心
@@ -422,6 +422,29 @@ define(
                     util.upload.onchange = null;
                 };
                 util.upload.click();
+            },
+            /**
+             * download
+             * @param {Object} cmd 命令对象
+             * @param {Function} callback 命令执行后的回调
+             */
+            download: function (cmd, callback) {
+                var path = util.joinPath(
+                    this._path,
+                    cmd.__arguments__.length > 0 ? cmd.__arguments__[0] : ''
+                );
+                cmdHandler.download(path, this, progress);
+                function progress(obj) {
+                    if (obj.error) {
+                        util.displayResult(language[obj.message]);
+                    }
+                    else if (obj.current > obj.total) {
+                        util.displayCommand('');
+                    }
+                    else {
+                        util.displayCommand(obj.current + '/' + obj.total);
+                    }
+                }
             }
         };
     }
