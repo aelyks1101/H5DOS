@@ -3,8 +3,8 @@
  * 主要负责内部命令解析和系统流程控制
  */
 define(
-    ['util', 'registry', './execute', './language', './template', './cmd/main'],
-    function (util, reg, exe, language, tpl, cmdHandler) {
+    ['util', './execute', './language', './template', './cmd/main'],
+    function (util, exe, language, tpl, cmdHandler) {
         return {
             // 系统语言包
             _language: language,
@@ -24,21 +24,9 @@ define(
              * @param {Function} callback 命令执行后的回调
              */
             help: function (cmd, callback) {
-                var arr = [];
                 var callbackHandler = exe.closeCallback(callback);
-                for (var key in this) {
-                    if (key.indexOf('_') > -1) {
-                        continue;
-                    }
-                    arr.push(key);
-                }
-                for (var app in reg.apps) {
-                    if (reg.apps[app].visible === false) {
-                        continue;
-                    }
-                    arr.push(app);
-                }
-                util.displayResult(tpl['help-list']({data: arr}));
+                var data = cmdHandler.help(this, cmd);
+                util.displayResult(tpl[data.tplname](data.content));
                 callbackHandler({});
             },
             /**

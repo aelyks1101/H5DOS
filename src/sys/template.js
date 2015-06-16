@@ -32,6 +32,7 @@ define(['doT'], function (doT) {
             '</table>'
         ],
         'help-list': [
+            '<div class="fs-url">{{=it.title}}</div>',
             '<table class="help-list">',
             '{{for(var n=0;n<it.data.length;n++){}}',
             '{{if (n % 5 ===0) {}}',
@@ -41,6 +42,16 @@ define(['doT'], function (doT) {
             '{{if(n % 5 === 4 || n === it.data.length-1){}}',
             '</tr>',
             '{{}}}',
+            '{{}}}',
+            '</table>'
+        ],
+        'help-detial': [
+            '<table class="help-detial">',
+            '{{for(var n=0; n<it.data.length; n++){}}',
+            '<tr>',
+            '<td class="help-example">{{=it.data[n].example}}</td>',
+            '<td class="help-info">{{=it.data[n].detial}}</td>',
+            '</tr>',
             '{{}}}',
             '</table>'
         ]

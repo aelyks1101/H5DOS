@@ -10,18 +10,14 @@ require.config({
 });
 // 主启动入口
 define(
-    [
-        'config', 'util',
-        'app/main',
-        'sys/core', 'sys/handler', 'filesystem'
-    ],
-    function (config, util, app, core, Handler, FileSystem) {
+    ['util', 'app/main', 'sys/core', 'sys/handler', 'filesystem'],
+    function (util, app, core, Handler, FileSystem) {
         var handlers = new Handler(core, app, util);
         var language = core._language;
         core._fs = new FileSystem({
-            type: config.fsType,
-            size: config.fsSize,
-            debug: config.fsDebug,
+            type: util.config.fsType,
+            size: util.config.fsSize,
+            debug: util.config.fsDebug,
             onSuccess: fsSuccessHandler,
             onFail: fsFailHandler
         });
