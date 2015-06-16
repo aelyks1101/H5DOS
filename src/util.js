@@ -2,10 +2,10 @@
  * 工具集 + 最底层事件触发处理
  * 提供核心工具，对js原生对象进行扩展
  * 工具包中每个方法都不调用其他方法，但可能会使用output, location, input, screen属性
- * @param {Function} require require方法
+ * @param {Object} config 系统配置
  * @return {Object} util工具包
  */
-define(function (require) {
+define(['config'], function (config) {
 
     var win = $(window);
     var screen = $('#screen');
@@ -97,6 +97,8 @@ define(function (require) {
      * 返回工具包
      */
     return {
+        // 系统配置
+        config: config,
         // 命令输入框
         output: document.getElementById('output'),
         // 地址框
