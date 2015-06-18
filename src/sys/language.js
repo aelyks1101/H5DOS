@@ -45,7 +45,7 @@ define(['config'], function (config) {
                     'dir [/]directory': 'View the structure of designated directory.'
                 },
                 'md': {
-                    'md [[/]directory/]directory': 'Create an empty directory'
+                    'md [/]directory': 'Create an empty directory'
                 },
                 'edit': {
                     'edit': 'Open simaple text editor.',
@@ -82,6 +82,9 @@ define(['config'], function (config) {
                 'move': {
                     'move file|directory directory': 'Move file or directory to'
                         + ' designated directory.'
+                },
+                'run': {
+                    'run [[/]directory/]filename.js': 'Execute a javascript file.'
                 }
             }
         };

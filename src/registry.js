@@ -8,6 +8,7 @@ define(function (require) {
     return {
         // 应用程序注册信息
         apps: {
+            'run': {},
             'edit': {},
             'bat': {
                 visible: false // 不在help命令里显示

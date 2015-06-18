@@ -162,7 +162,7 @@ define(
                 if (typeof file !== 'string' || file.length === 0) {
                     return;
                 }
-                if (!util.checkFilename(file)) {
+                if (!util.checkFileName(file)) {
                     input(language.unablename + '\n' + language.noname);
                 }
                 else {

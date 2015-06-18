@@ -110,11 +110,24 @@ define(['config'], function (config) {
         // 桌面显示器
         screen: screen,
         /**
+         * 获取文件名的扩展名
+         * @param {string} str 文件名
+         * @return {string} 文件扩展名，不含.
+         */
+        getFileType: function (str) {
+            var type = '';
+            if (str.indexOf('.') > -1) {
+                var arr = str.split('.');
+                type = arr[arr.length - 1];
+            }
+            return type;
+        },
+        /**
          * 检查文件名合法性
          * @param {string} str 文件名
          * @return {boolean} 是否合法
          */
-        checkFilename: function (str) {
+        checkFileName: function (str) {
             var enable = true;
             var chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '\''];
             if (str.length === 0) {
