@@ -14,8 +14,48 @@ body {
     left: 0px;
     top: 0px;
 }
+#sandbox {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background-color: #666666;
+    display: none;
+    .titlebar {
+        height: 29px;
+        border-bottom: 1px solid #EEEEEE;
+    }
+    .close {
+        float: right;
+        display: inline-block;
+        width: 40px;
+        height: 29px;
+        text-align: center;
+        line-height: 30px;
+        color: #FFF;
+        cursor: pointer;
+    }
+    .close:hover {
+        background-color: #e04343;
+    }
+    .title {
+        margin-right: 40px;
+        line-height: 30px;
+        padding-left: 10px;
+        color: #FFF;
+    }
+    iframe {
+        position: absolute;
+        left: 0px;
+        top: 30px;
+        border: 0px;
+        background-color: #E6E6E6;
+    }
+}
 #location {
     display: inline-block;
+}
+#output {
+    margin-bottom: 20px;
 }
 #input {
     font-size: 16px;

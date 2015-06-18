@@ -4,7 +4,7 @@ define(['doT'], function (doT) {
         'main': [
             '<textarea class="content" spellcheck="false"></textarea>',
             '<div class="menu">',
-            '<div class="menu-button" data-cmd="new" title="Ctrl + N">{{=it.newfile}}</div>',
+            '<div class="menu-button" data-cmd="new" title="Alt + N">{{=it.newfile}}</div>',
             '<div class="menu-button" data-cmd="save" title="Ctrl + S">{{=it.save}}</div>',
             '<div class="menu-button" data-cmd="quit" title="Alt + Q">{{=it.quit}}</div>',
             '</div>'

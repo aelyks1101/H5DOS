@@ -44,6 +44,7 @@ define(['config'], function (config) {
         return format;
     };
     /* eslint-enable */
+
     /**
      * 命令行模式时，控制鼠标焦点的事件
      * @param {Object} event 事件句柄
@@ -110,38 +111,6 @@ define(['config'], function (config) {
         // 桌面显示器
         screen: screen,
         /**
-         * 获取文件名的扩展名
-         * @param {string} str 文件名
-         * @return {string} 文件扩展名，不含.
-         */
-        getFileType: function (str) {
-            var type = '';
-            if (str.indexOf('.') > -1) {
-                var arr = str.split('.');
-                type = arr[arr.length - 1];
-            }
-            return type;
-        },
-        /**
-         * 检查文件名合法性
-         * @param {string} str 文件名
-         * @return {boolean} 是否合法
-         */
-        checkFileName: function (str) {
-            var enable = true;
-            var chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '\''];
-            if (str.length === 0) {
-                return false;
-            }
-            for (var n = 0; n < chars.length; n++) {
-                if (str.indexOf(chars[n]) > -1) {
-                    enable = false;
-                    break;
-                }
-            }
-            return enable;
-        },
-        /**
          * 绑定作用域
          * @param {Object} obj 作用域对象
          * @param {Function} func 待绑定函数
@@ -175,44 +144,85 @@ define(['config'], function (config) {
          * @return {string} 拼接后的路径
          */
         joinPath: function (path, to) {
-            var str = '';
+            var dirs = [];
+            var n = 0;
             if (typeof path !== 'string') {
                 path = '';
             }
             if (typeof to !== 'string') {
                 to = '';
             }
-            // 根目录
             if (to.indexOf('/') === 0) {
-                str = to.substr(1, to.length);
+                dirs = [];
             }
-            // 当前目录的上一层目录
-            else if (to.indexOf('..') === 0) {
-                if (path.indexOf('/') > -1) {
-                    path = path.split('/');
-                    path.pop();
-                    str = path.join('/');
-                }
-                else {
-                    str = '';
-                }
-            }
-            // 当前目录
-            else if (to.indexOf('.') === 0) {
-                str = path;
-            }
-            // 拼接目录
             else {
-                str = path + (path === '' ? '' : '/') + to;
+                dirs = path.split('/');
             }
-            // 去除无用分隔符
-            if (str.charAt(str.length - 1) === '/') {
-                str = str.substr(0, str.length - 1);
+            to = to.split('/');
+            for (n = 0; n < to.length; n++) {
+                if (to[n] === '.') {
+                    continue;
+                }
+                if (to[n] === '..') {
+                    dirs.pop();
+                    continue;
+                }
+                dirs.push(to[n]);
             }
-            if (str.charAt(0) === '/') {
-                str = str.substr(1, str.length);
+            to = [];
+            for (n = 0; n < dirs.length; n++) {
+                if (dirs[n] !== '') {
+                    to.push(dirs[n]);
+                }
             }
-            return str;
+            path = to.length === 0 ? '' : to.join('/');
+            return path;
+        },
+        /**
+         * 获取文件名的扩展名
+         * @param {string} str 文件名
+         * @return {string} 文件扩展名，不含.
+         */
+        getFileType: function (str) {
+            var type = '';
+            if (str.indexOf('.') > -1) {
+                var arr = str.split('.');
+                type = arr[arr.length - 1];
+            }
+            return type;
+        },
+        /**
+         * 获取文件的路径
+         * @param {string} path 绝对路径
+         * @return {string} 文件的路径
+         */
+        getFilePath: function (path) {
+            var rp = '';
+            if (path.indexOf('/') > -1) {
+                var arr = path.split('/');
+                arr.pop();
+                rp = arr.join('/');
+            }
+            return rp;
+        },
+        /**
+         * 检查文件名合法性
+         * @param {string} str 文件名
+         * @return {boolean} 是否合法
+         */
+        checkFileName: function (str) {
+            var enable = true;
+            var chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '\''];
+            if (str.length === 0) {
+                return false;
+            }
+            for (var n = 0; n < chars.length; n++) {
+                if (str.indexOf(chars[n]) > -1) {
+                    enable = false;
+                    break;
+                }
+            }
+            return enable;
         },
         /**
          * 显示器推送
@@ -220,8 +230,9 @@ define(['config'], function (config) {
          * @param {boolean} showlocation 是否显示前缀
          */
         displayResult: function (result, showlocation) {
-            this.output.innerHTML += (showlocation ? this.location.innerHTML : '')
-                + result + '<br><br>';
+            this.output.innerHTML += '<div>'
+                + (showlocation ? '<br>' + this.location.innerHTML : '')
+                + result + '</div>';
             window.scrollTo(0, document.body.scrollHeight);
         },
         /**
@@ -236,12 +247,6 @@ define(['config'], function (config) {
          */
         displayCommand: function (cmd) {
             this.input.value = cmd;
-        },
-        /**
-         * 修改input的长度
-         */
-        inputResize: function () {
-            this.input.size = this.input.value.replace(/[^\u0000-\u00ff]/g, 'aa').length + 2;
         },
         /**
          * 修改目录
@@ -283,6 +288,12 @@ define(['config'], function (config) {
             }
         },
         /**
+         * 修改input的长度
+         */
+        inputResize: function () {
+            this.input.size = this.input.value.replace(/[^\u0000-\u00ff]/g, 'aa').length + 2;
+        },
+        /**
          * 解析命令行
          * @param {string} cmd 用户输入的命令行
          * @return {Object} 命令对象
@@ -315,6 +326,10 @@ define(['config'], function (config) {
             if (obj.__cmd__.indexOf('cd..') === 0) {
                 obj.__cmd__ = 'cd';
                 obj.__arguments__[0] = '..';
+            }
+            else if (obj.__cmd__.indexOf('cd/') === 0) {
+                obj.__cmd__ = 'cd';
+                obj.__arguments__[0] = '/';
             }
             else if (obj.__cmd__.indexOf('cd.') === 0) {
                 obj.__cmd__ = 'cd';
