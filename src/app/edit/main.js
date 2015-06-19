@@ -26,10 +26,6 @@ define(
             // 退出编辑器
             quit: function () {
                 quit();
-            },
-            // 绘制界面
-            resize: function (evt) {
-                resize(evt);
             }
         };
 
@@ -66,14 +62,8 @@ define(
                 util.screen.bind(key, handler[key]);
             }
             util.onKeyDown(handler._keydown);
-            util.onScreenResize(handler._resize);
             // 设置焦点
             util.screen.find('.content')[0].focus();
-            // 初始化界面
-            resize({
-                width: util.screen.width(),
-                height: util.screen.height()
-            });
             // 打开文件
             open();
         }
@@ -217,23 +207,12 @@ define(
         }
 
         /**
-         * 设置app各种尺寸
-         * @param {Object} evt 尺寸对象
-         */
-        function resize(evt) {
-            util.screen.find('.content').css({
-                height: evt.height - 35 + 'px',
-                width: evt.width - 2 + 'px'
-            });
-        }
-
-        /**
          * 卸载
          */
         function dispose() {
             util.displayScreen(false);
             util.screen.removeClass('app-edit');
-            util.onScreenResize();
+            util.screen.html('');
             util.onKeyDown();
             for (var key in handler) {
                 if (key.indexOf('_') === 0) {

@@ -7,9 +7,7 @@
  */
 define(['config'], function (config) {
 
-    var win = $(window);
     var screen = $('#screen');
-    var screenResizeHandler = null;
     var screenKeydownHandler = null;
 
     /**
@@ -75,24 +73,6 @@ define(['config'], function (config) {
         }
     }
 
-    /**
-     * 界面窗体resize事件
-     * @param {Object} event 事件句柄
-     */
-    function windowResizeHandler(event) {
-        var w = win.width();
-        var h = win.height();
-        screen.css({
-            width: w + 'px',
-            height: h + 'px'
-        });
-        if (typeof screenResizeHandler === 'function') {
-            screenResizeHandler({
-                width: w,
-                height: h
-            });
-        }
-    }
 
     /**
      * 返回工具包
@@ -120,13 +100,6 @@ define(['config'], function (config) {
             return function (evt) {
                 func.call(obj, evt);
             };
-        },
-        /**
-         * 桌面resize分发句柄注册
-         * @param {function | null} func 事件句柄
-         */
-        onScreenResize: function (func) {
-            screenResizeHandler = func;
         },
         /**
          * 桌面键盘事件句柄
@@ -269,21 +242,11 @@ define(['config'], function (config) {
         displayScreen: function (show) {
             if (show) {
                 this.input.onblur = null;
-                this.screen.css({
-                    width: win.width() + 'px',
-                    height: win.height() + 'px'
-                });
-                window.onresize = windowResizeHandler;
                 $(document).bind('keydown', windowKeydownHandler);
             }
             else {
                 this.input.onblur = commandBlurHandler;
-                this.screen.html('').css({
-                    width: '0px',
-                    height: '0px'
-                });
                 this.input.focus();
-                window.onresize = null;
                 $(document).unbind('keydown');
             }
         },

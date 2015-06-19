@@ -13,13 +13,18 @@ body {
     position: fixed;
     left: 0px;
     top: 0px;
+    right: 0px;
+    bottom: 0px;
 }
 #sandbox {
+    display: none;
     position: fixed;
     left: 0px;
     top: 0px;
+    right: 0px;
+    bottom: 0px;
+    padding-bottom: 30px;
     background-color: #666666;
-    display: none;
     .titlebar {
         height: 29px;
         border-bottom: 1px solid #EEEEEE;
@@ -44,11 +49,10 @@ body {
         color: #FFF;
     }
     iframe {
-        position: absolute;
-        left: 0px;
-        top: 30px;
-        border: 0px;
         background-color: #E6E6E6;
+        width: 100%;
+        height: 100%;
+        border: 0px;
     }
 }
 #location {
