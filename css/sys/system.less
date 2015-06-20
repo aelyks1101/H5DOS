@@ -1,13 +1,20 @@
-body {
+#uploader {
+    display: none;
+}
+#location {
+    display: inline-block;
+}
+#output {
+    margin-bottom: 20px;
+}
+#input {
     font-size: 16px;
     overflow: hidden;
     background-color: #000;
     color: #C0C0C0;
     font-weight: bold;
-    font-family: 微软雅黑;
-}
-#uploader {
-    display: none;
+    border: 0px;
+    outline: none;
 }
 #screen {
     position: fixed;
@@ -55,21 +62,6 @@ body {
         border: 0px;
     }
 }
-#location {
-    display: inline-block;
-}
-#output {
-    margin-bottom: 20px;
-}
-#input {
-    font-size: 16px;
-    overflow: hidden;
-    background-color: #000;
-    color: #C0C0C0;
-    font-weight: bold;
-    border: 0px;
-    outline: none;
-}
 .fs-url {
     color: #A6E22E;
     display: inline-block;
@@ -99,4 +91,3 @@ body {
         padding-left: 10px;
     }
 }
-@import "edit.less";

@@ -7,7 +7,8 @@ define(
         'registry',
         'app/edit/main',
         'app/bat/main',
-        'app/run/main'
+        'app/run/main',
+        'app/studio/main'
     ],
     function (require, reg) {
         var exp = {};

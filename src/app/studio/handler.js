@@ -5,23 +5,14 @@ define(function (require) {
                 this.quit();
             }
             if (evt.ctrl && evt.code === 83) {
-                this.save();
+                // this.save();
             }
             if (evt.alt && evt.code === 78) {
-                this.newFile();
+                // this.newFile();
             }
         },
         click: function (evt) {
-            var cmd = evt.target.dataset.cmd;
-            if (cmd === 'quit') {
-                this.quit();
-            }
-            else if (cmd === 'save') {
-                this.save();
-            }
-            else if (cmd === 'new') {
-                this.newFile();
-            }
+
         }
     };
 });

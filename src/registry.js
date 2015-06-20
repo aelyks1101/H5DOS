@@ -6,16 +6,16 @@
  */
 define(function (require) {
     return {
-        // 应用程序注册信息
+        // 应用程序注册信息，记录可用的程序
         apps: {
             'run': {},
             'edit': {},
-            'bat': {
-                visible: false // 不在help命令里显示
-            }
+            'studio': {},
+            'bat': {visible: false}
         },
-        // 文件类型注册信息
+        // 文件类型注册信息，记录文件打开程序列表
         docs: {
+            'js': ['studio'],
             'txt': ['edit'],
             'bat': ['bat']
         }

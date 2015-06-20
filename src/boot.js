@@ -2,6 +2,7 @@
 // require 配置
 require.config({
     paths: {
+        ace: '../lib/ace',
         zip: '../lib/jszip.min',
         saver: '../lib/FileSaver',
         doT: '../lib/doT',
