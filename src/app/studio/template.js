@@ -1,5 +1,4 @@
-define(['doT'], function (doT) {
-
+define(['component', 'doT'], function (cmpt, doT) {
     var obj = {
         'main': [
             '<div class="info-bar"></div>',
@@ -8,7 +7,7 @@ define(['doT'], function (doT) {
             '<div class="editor-box">',
             '<div class="editor"></div>',
             '</div>',
-            '<div class="menu-bar">menu</div>'
+            cmpt.menu
         ]
     };
     for (var key in obj) {

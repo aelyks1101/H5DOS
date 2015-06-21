@@ -40,7 +40,7 @@ define(
             // 添加class
             util.screen.addClass('app-studio');
             // 导入html
-            util.screen.html(template.main({}));
+            util.screen.html(template.main({menu: language.menu}));
             // 注册事件代理
             for (var key in handler) {
                 if (key.indexOf('_') === 0) {
@@ -68,7 +68,6 @@ define(
             // editor.setAutoScrollEditorIntoView(true);
             editor.focus();
         }
-
         /**
          * 退出
          */

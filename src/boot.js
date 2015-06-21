@@ -6,7 +6,8 @@ require.config({
         zip: '../lib/jszip.min',
         saver: '../lib/FileSaver',
         doT: '../lib/doT',
-        filesystem: '../lib/FileSystem'
+        filesystem: '../lib/FileSystem',
+        component: '../lib/component/main'
     }
 });
 // 主启动入口

@@ -12,7 +12,9 @@ define(function (require) {
             }
         },
         click: function (evt) {
-
+            if (evt.target.dataset.cmd) {
+                alert(evt.target.dataset.cmd);
+            }
         }
     };
 });
