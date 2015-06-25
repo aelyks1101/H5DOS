@@ -1,0 +1,29 @@
+.tree {
+    font-size: 14px;
+    color: #000;
+    padding-top: 10px;
+    padding-left: 10px;
+    line-height: 22px;
+    .iconfont {
+        display: inline-block;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .iconfont[data-cmd=toggle]:hover {
+        color: #7AB1E8;
+    }
+    .children {
+        margin-left: 15px;
+    }
+    .label {
+        cursor: pointer;
+    }
+    .label:hover {
+        color: #7AB1E8;
+    }
+    .hideChildren {
+        .children {
+            display: none;
+        }
+    }
+}

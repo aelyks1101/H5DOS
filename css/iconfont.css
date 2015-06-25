@@ -1,0 +1,7 @@
+@font-face {
+    font-family: "iconfont";
+    src: url('icon/iconfont.woff') format('woff');
+}
+.iconfont {
+    font-family:"iconfont" !important;
+}

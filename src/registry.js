@@ -18,6 +18,10 @@ define(function (require) {
             'js': ['studio'],
             'txt': ['edit'],
             'bat': ['bat']
-        }
+        },
+        // 系统启动自运行
+        autorun: [
+            'b.js'
+        ]
     };
 });

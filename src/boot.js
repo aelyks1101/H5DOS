@@ -6,8 +6,7 @@ require.config({
         zip: '../lib/jszip.min',
         saver: '../lib/FileSaver',
         doT: '../lib/doT',
-        filesystem: '../lib/FileSystem',
-        component: '../lib/component/main'
+        filesystem: '../lib/FileSystem'
     }
 });
 // 主启动入口
@@ -33,6 +32,8 @@ define(
             util.displayScreen(false);
             util.displayLocation('');
             util.displayResult(language.welcome + _fs._fs.root.toURL() + '</div>');
+            // autorun
+            handlers.enterPressHandler(app.__registry__.autorun[0]);
         }
         /**
          * 申请空间处理句柄

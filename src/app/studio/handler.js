@@ -12,8 +12,13 @@ define(function (require) {
             }
         },
         click: function (evt) {
-            if (evt.target.dataset.cmd) {
-                alert(evt.target.dataset.cmd);
+            for (var key in this.ui) {
+                if (
+                    this.ui[key]._handler
+                    && typeof this.ui[key]._handler.click === 'function'
+                ) {
+                    this.ui[key]._handler.click(evt);
+                }
             }
         }
     };

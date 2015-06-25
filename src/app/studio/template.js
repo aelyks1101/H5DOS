@@ -1,13 +1,11 @@
-define(['component', 'doT'], function (cmpt, doT) {
+define(['doT'], function (doT) {
     var obj = {
         'main': [
             '<div class="info-bar"></div>',
             '<div class="folder-bar"></div>',
             '<div class="tab-bar"></div>',
-            '<div class="editor-box">',
             '<div class="editor"></div>',
-            '</div>',
-            cmpt.menu
+            '<div class="menu"></div>'
         ]
     };
     for (var key in obj) {
@@ -17,5 +15,4 @@ define(['component', 'doT'], function (cmpt, doT) {
         obj[key] = doT.template(obj[key].join(''), undefined);
     }
     return obj;
-
 });

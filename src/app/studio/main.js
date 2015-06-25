@@ -2,8 +2,8 @@
  * 简易编辑器主接口
  */
 define(
-    ['util', 'ace/ace', './handler', './language', './template'],
-    function (util, ace, handler, language, template) {
+    ['util', './ui', './handler', './template', './config'],
+    function (util, ui, handler, template, config) {
 
         // 单例对象
         var app = {
@@ -11,6 +11,8 @@ define(
             path: '',
             // 文件操作句柄
             fs: null,
+            // ui操作句柄
+            ui: ui,
             // 退出编辑器
             quit: function () {
                 quit();
@@ -39,8 +41,6 @@ define(
             util.displayScreen(true);
             // 添加class
             util.screen.addClass('app-studio');
-            // 导入html
-            util.screen.html(template.main({menu: language.menu}));
             // 注册事件代理
             for (var key in handler) {
                 if (key.indexOf('_') === 0) {
@@ -49,8 +49,30 @@ define(
                 util.screen.bind(key, handler[key]);
             }
             util.onKeyDown(handler._keydown);
-            // 打开文件
-            var code = [
+            // 导入HTML
+            util.screen.html(template.main({}));
+            // 初始化各ui组件
+            ui.explorer.initialize(fs, null, uiCallback);
+            ui.menu.initialize('.menu', uiCallback);
+            ui.editor = ui.ace.edit(util.screen.find('.editor')[0]);
+            ui.editor.$blockScrolling = Infinity;
+            ui.editor.setTheme('ace/theme/monokai');
+            ui.editor.getSession().setMode('ace/mode/javascript');
+            ui.editor.setFontSize(18);
+            // 显示ui组件
+            // ui.explorer.show({});
+            ui.menu.show(config);
+            // 显示代码
+            showCode();
+            ui.editor.focus();
+        }
+
+        /**
+         * 显示代码
+         * @param {string} code 代码串，格式化好的
+         */
+        function showCode(code) {
+            code = [
                 'function foo(items) {\n',
                 '    heheda;\n',
                 '    var i;\n',
@@ -59,15 +81,17 @@ define(
                 '    }\n',
                 '}'
             ].join('');
-            var editor = ace.edit(util.screen.find('.editor')[0]);
-            // console.log(editor);
-            editor.setTheme('ace/theme/monokai');
-            editor.getSession().setMode('ace/mode/javascript');
-            editor.setValue(code, code.length);
-            editor.setFontSize(18);
-            // editor.setAutoScrollEditorIntoView(true);
-            editor.focus();
+            ui.editor.setValue(code, code.length);
         }
+
+        /**
+         * ui回调
+         * @param {Object} evt 事件对象
+         */
+        function uiCallback(evt) {
+            // console.log(evt);
+        }
+
         /**
          * 退出
          */
@@ -83,16 +107,23 @@ define(
             util.screen.removeClass('app-studio');
             util.screen.html('');
             util.onKeyDown();
-            for (var key in handler) {
+            var key = '';
+            for (key in handler) {
                 if (key.indexOf('_') === 0) {
                     continue;
                 }
                 util.screen.unbind(key);
             }
+            for (key in ui) {
+                if (typeof ui[key].dispose === 'function') {
+                    ui[key].dispose();
+                }
+            }
             app.path = '';
             app.fs = null;
         }
 
+        // 返回接口
         return initialize;
     }
 );

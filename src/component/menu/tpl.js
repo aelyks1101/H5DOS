@@ -1,9 +1,9 @@
-// 通用ui模板接口
-define(function (require) {
+define(['doT'], function (doT) {
+    var clickBtn = 'data-com="menu" data-cmd="{{=cmd}}"';
     var item = [
         '<div class="menu-item-checked">{{=checked}}</div>',
-        '<div class="menu-item-label" data-cmd="{{=cmd}}">{{=label}}</div>',
-        '<div class="menu-item-hotkey" data-cmd="{{=cmd}}">{{=hotkey}}</div>',
+        '<div class="menu-item-label" ' + clickBtn + '>{{=label}}</div>',
+        '<div class="menu-item-hotkey" ' + clickBtn + '>{{=hotkey}}</div>'
     ];
     var children = [
         '<div class="menu-list-2">',
@@ -49,7 +49,7 @@ define(function (require) {
         '{{var cmd=button.cmd?button.cmd:"";}}',
         '{{var label=button.label?button.label:"";}}',
         '<div class="menu-button {{=disable}}">',
-        '<div class="menu-button-label" data-cmd="{{=cmd}}">{{=label}}</div>',
+        '<div class="menu-button-label" ' + clickBtn + '>{{=label}}</div>',
         '{{if(button.items instanceof Array){}}',
         '{{var list=button.items;}}',
         list.join(''),
@@ -57,12 +57,10 @@ define(function (require) {
         '</div>'
     ];
     var menu = [
-        '<div class="menu">',
         '{{for(var n=0;n<it.menu.length;n++){}}',
         '{{var button=it.menu[n];}}',
         button.join(''),
-        '{{}}}',
-        '</div>'
+        '{{}}}'
     ];
-    return menu.join('');
+    return doT.template(menu.join(''), undefined);
 });
