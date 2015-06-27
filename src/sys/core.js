@@ -123,6 +123,7 @@ define(
                 me._fs.dir(path, gotEntries);
                 function gotEntries(evt) {
                     if (exe.isOK(evt)) {
+                        evt.sort(util.fileSortByChar);
                         cmd.__path__ = path;
                         cmdHandler.dir(cmd, evt, util.displayResult);
                     }

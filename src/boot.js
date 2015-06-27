@@ -19,6 +19,7 @@ define(
             type: util.config.fsType,
             size: util.config.fsSize,
             debug: util.config.fsDebug,
+            hidden: util.config.hidden,
             onSuccess: fsSuccessHandler,
             onFail: fsFailHandler
         });
@@ -32,8 +33,11 @@ define(
             util.displayScreen(false);
             util.displayLocation('');
             util.displayResult(language.welcome + _fs._fs.root.toURL() + '</div>');
-            // autorun
-            handlers.enterPressHandler(app.__registry__.autorun[0]);
+            // 检查并创建系统文件夹，
+            _fs.md('.sys', function (evt) {
+                // autorun
+                handlers.enterPressHandler(app.__registry__.autorun[0]);
+            });
         }
         /**
          * 申请空间处理句柄

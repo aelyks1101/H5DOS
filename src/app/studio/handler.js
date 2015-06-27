@@ -10,6 +10,14 @@ define(function (require) {
             if (evt.alt && evt.code === 78) {
                 // this.newFile();
             }
+            for (var key in this.ui) {
+                if (
+                    this.ui[key]._handler
+                    && typeof this.ui[key]._handler.keydown === 'function'
+                ) {
+                    this.ui[key]._handler.keydown(evt);
+                }
+            }
         },
         click: function (evt) {
             for (var key in this.ui) {

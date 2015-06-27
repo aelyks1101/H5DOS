@@ -35,7 +35,8 @@ define(['config'], function (config) {
             if (new RegExp('(' + k + ')').test(format)) {
                 format = format.replace(
                     RegExp.$1,
-                    RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
+                    RegExp.$1.length === 1
+                        ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
                 );
             }
         }
@@ -60,14 +61,22 @@ define(['config'], function (config) {
         var key = {
             alt: evt.altKey,
             ctrl: evt.ctrlKey,
-            code: evt.keyCode
+            code: evt.keyCode,
+            target: evt.target
         };
         if (typeof screenKeydownHandler === 'function') {
             screenKeydownHandler(key);
         }
+        // 阻止冒泡到浏览器
         if (
-            (evt.ctrlKey && evt.keyCode === 83) ||
-            (evt.ctrlKey && evt.keyCode === 78)
+            (evt.ctrlKey && evt.keyCode === 83) ||  // ctrl + s
+            (evt.altKey && evt.keyCode === 37) ||   // alt + left
+            (evt.altKey && evt.keyCode === 39) ||   // alt + right
+            (
+                (evt.keyCode === 8) // backspace
+                && evt.target.type !== 'text'
+                && evt.target.tagName !== 'TEXTAREA'
+            )
         ) {
             return false;
         }
@@ -109,8 +118,44 @@ define(['config'], function (config) {
             screenKeydownHandler = func;
         },
         /**
+         * 文件字母排序
+         * 所有涉及到排序都是升序，降序请自行倒序之
+         * @param {Object} a entry元素1
+         * @param {Object} b entry元素2
+         * @return {number} 排序标识 1或-1
+         */
+        fileSortByChar: function (a, b) {
+            var r = 1;
+            if (a.isDirectory && b.isFile) {
+                r = -1;
+            }
+            else if (a.isFile && b.isDirectory) {
+                r = 1;
+            }
+            else {
+                var na = a.name;
+                var nb = b.name;
+                if (na.charCodeAt(0) < 128 && nb.charCodeAt(0) > 127) {
+                    r = -1;
+                }
+                else if (nb.charCodeAt(0) < 128 && na.charCodeAt(0) > 127) {
+                    r = 1;
+                }
+                else if (na.charCodeAt(0) < 128) {
+                    if (na < nb) {
+                        r = -1;
+                    }
+                }
+                else {
+                    r = na.localeCompare(nb);
+                }
+            }
+            return r;
+        },
+        /**
          * 拼接路径
-         * 将当前路径与用户输入路径拼接成绝对路径，如用户输入相对路径，则将其合并到当前路径
+         * 将当前路径与用户输入路径拼接成绝对路径，
+         * 如用户输入相对路径，则将其合并到当前路径
          * 后面；如用户输入绝对路径，则返回用户输入的路径
          * @param {string} path 系统当前路径
          * @param {string} to 用户输入的路径
@@ -150,6 +195,20 @@ define(['config'], function (config) {
             }
             path = to.length === 0 ? '' : to.join('/');
             return path;
+        },
+        /**
+         * 转换size大小，加入单位
+         * @param {number} size 文件大小
+         * @return {string} 带单位的w文件大小
+         */
+        getFileSize: function (size) {
+            var arr = ['B', 'KB', 'MB', 'GB', 'TB'];
+            var index = 0;
+            while (size > 1024) {
+                size = (size / 1024).toFixed(2);
+                index++;
+            }
+            return size + arr[index];
         },
         /**
          * 获取文件名的扩展名

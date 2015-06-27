@@ -59,12 +59,11 @@ define(
             ui.editor.setTheme('ace/theme/monokai');
             ui.editor.getSession().setMode('ace/mode/javascript');
             ui.editor.setFontSize(18);
-            // 显示ui组件
-            // ui.explorer.show({});
-            ui.menu.show(config);
-            // 显示代码
-            showCode();
             ui.editor.focus();
+            // 显示ui组件
+            ui.menu.show(config);
+            ui.explorer.show({});
+            showCode();
         }
 
         /**

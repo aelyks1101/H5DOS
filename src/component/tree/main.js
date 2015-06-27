@@ -33,10 +33,10 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
     exports.show = function (data) {
         var html = produceHTML(data);
         if (exports._container != null) {
-            util.screen.find(exports._container).append(html);
+            util.screen.find(exports._container).html(html);
         }
         else {
-            util.screen.append(html);
+            util.screen.html(html);
         }
     };
     /**

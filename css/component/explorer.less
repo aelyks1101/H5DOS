@@ -8,6 +8,9 @@
     margin-left: -500px;
     background-color: #FFFFFF;
     border: 1px solid #9A9A9A;
+    .filename-error {
+        outline-color: #F00;
+    }
     .explorer-main {
         position: absolute;
         width: 100%;
@@ -71,6 +74,7 @@
         padding-left: 4px;
         padding-right: 4px;
         border-bottom: 1px solid #9A9A9A;
+        color: #000;
         input {
             margin-left: 2px;
             margin-right: 2px;
@@ -80,6 +84,9 @@
         div {
             display: inline-block;
         }
+        .disable {
+            color: #9A9A9A;
+        }
         .iconfont {
             font-size: 18px;
             cursor: pointer;
@@ -88,7 +95,6 @@
             margin-top: 4px;
             line-height: 30px;
             text-align: center;
-            color: #000;
             border: 1px solid #E6E6E6;
         }
         .iconfont:hover {

@@ -15,7 +15,9 @@ define(function (require) {
         // 文件空间大小
         fsSize: 1024 * 1024 * 100,
         // 文件系统是否调试
-        fsDebug: false
+        fsDebug: false,
+        // 隐藏的目录
+        hidden: '/.sys/'
     };
 
 });
