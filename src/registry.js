@@ -10,7 +10,7 @@ define(function (require) {
         apps: {
             'run': {},
             'edit': {},
-            'studio': {},
+            'studio': {logfile: '/.sys/log-studio'},
             'bat': {visible: false}
         },
         // 文件类型注册信息，记录文件打开程序列表

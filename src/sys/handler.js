@@ -90,7 +90,8 @@ define(function (require) {
                 typeof me.app[cmd.__cmd__] === 'function'
                 && me.app.__registry__.apps[cmd.__cmd__].visible !== false
             ) {
-                me.app[cmd.__cmd__](
+                openApp(
+                    cmd.__cmd__,
                     me.core._path,
                     cmd.__arguments__.length > 0
                         ? me.util.joinPath(me.core._path, cmd.__arguments__[0]) : '',
@@ -134,7 +135,7 @@ define(function (require) {
                         me.app[app](evt.fullPath, me.core, me.util);
                     }
                     else {
-                        me.app[app](me.core._path, evt.name, me.core._fs);
+                        openApp(app, me.core._path, evt.name, me.core._fs);
                     }
                 }
                 else {
@@ -143,6 +144,35 @@ define(function (require) {
             }
             else {
                 me.util.displayResult(evt.name + ' ' + me.language.cantOpen);
+            }
+        }
+        /**
+         * 打开应用程序
+         * @param {string} app app名称
+         * @param {string} path 当前路径
+         * @param {string} file 当前操作的文件，如果没有则为''
+         * @param {Object} fs 文件系统句柄
+         */
+        function openApp (app, path, file, fs) {
+            var logfile = me.app.__registry__.apps[app].logfile;
+            if (typeof logfile === 'string' && logfile.indexOf('/.sys/') === 0) {
+                me.core._fs.read(logfile, {}, function (evt) {
+                    var log = '{}';
+                    if (!evt.error) {
+                        log = evt.target.result;
+                    }
+                    try {
+                        log = JSON.parse(log);
+                    }
+                    catch (e) {
+                        log = {};
+                    }
+                    log.__logfile = logfile;
+                    me.app[app](path, file, fs, log);
+                });
+            }
+            else {
+                me.app[app](path, file, fs, {});
             }
         }
     };

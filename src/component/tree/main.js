@@ -26,12 +26,13 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
         this._container = container;
         this._callback = callback;
     };
+
     /**
      * 显示，导入到screen
      * @param {Object} data 模板渲染数据
      */
     exports.show = function (data) {
-        var html = produceHTML(data);
+        var html = produceHTML(data.tree, data.status);
         if (exports._container != null) {
             util.screen.find(exports._container).html(html);
         }
@@ -39,6 +40,7 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
             util.screen.html(html);
         }
     };
+
     /**
      * 卸载
      */
@@ -48,7 +50,7 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
     };
 
     // 内部方法
-    function produceHTML(tree) {
+    function produceHTML(tree, status) {
         var key;
         for (key in tree) {
             if (tree[key].isFile) {
@@ -63,6 +65,9 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
         }
         function producing(folder) {
             if (folder.children.length === 0) {
+                if (status[folder.fullPath]) {
+                    folder.open = true;
+                }
                 folder.html = tpl.directory(folder);
             }
             else {
@@ -77,6 +82,9 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
                             producing(child);
                         }
                     }
+                }
+                if (status[folder.fullPath]) {
+                    folder.open = true;
                 }
                 folder.html = tpl.directory(folder);
             }

@@ -7,6 +7,8 @@ define(
 
         // 单例对象
         var app = {
+            // 状态记录仪器，存储在本地文件中
+            record: null,
             // 当前操作目录
             path: '',
             // 文件操作句柄
@@ -32,11 +34,13 @@ define(
          * @param {string} path 当前操作目录
          * @param {string} file 操作文件名
          * @param {Object} fs 文件系统句柄
+         * @param {Object} record app在系统中留下的日志和参数
          */
-        function initialize(path, file, fs) {
+        function initialize(path, file, fs, record) {
             // 导入单例数据
             app.path = path;
             app.fs = fs;
+            app.record = record;
             // 展开图形界面
             util.displayScreen(true);
             // 添加class
@@ -52,7 +56,12 @@ define(
             // 导入HTML
             util.screen.html(template.main({}));
             // 初始化各ui组件
-            ui.explorer.initialize(fs, null, uiCallback);
+            ui.explorer.initialize({
+                fs: fs,
+                container: null,
+                callback: uiCallback,
+                treeStatus: app.record['explorer-tree-status']
+            });
             ui.menu.initialize('.menu', uiCallback);
             ui.editor = ui.ace.edit(util.screen.find('.editor')[0]);
             ui.editor.$blockScrolling = Infinity;
@@ -88,7 +97,9 @@ define(
          * @param {Object} evt 事件对象
          */
         function uiCallback(evt) {
-            // console.log(evt);
+            if (evt.type === 'log') {
+                app.record[evt.key] = evt.content;
+            }
         }
 
         /**
@@ -102,24 +113,31 @@ define(
          * 卸载
          */
         function dispose() {
-            util.displayScreen(false);
-            util.screen.removeClass('app-studio');
-            util.screen.html('');
-            util.onKeyDown();
-            var key = '';
-            for (key in handler) {
-                if (key.indexOf('_') === 0) {
-                    continue;
+            // var str = JSON.stringify(app.record);
+            var file = app.record.__logfile;
+            delete app.record.__logfile;
+            app.fs.write(file, {data: new Blob([JSON.stringify(app.record)])}, release);
+            function release() {
+                util.displayScreen(false);
+                util.screen.removeClass('app-studio');
+                util.screen.html('');
+                util.onKeyDown();
+                var key = '';
+                for (key in handler) {
+                    if (key.indexOf('_') === 0) {
+                        continue;
+                    }
+                    util.screen.unbind(key);
                 }
-                util.screen.unbind(key);
-            }
-            for (key in ui) {
-                if (typeof ui[key].dispose === 'function') {
-                    ui[key].dispose();
+                for (key in ui) {
+                    if (typeof ui[key].dispose === 'function') {
+                        ui[key].dispose();
+                    }
                 }
+                app.path = '';
+                app.fs = null;
+                app.record = null;
             }
-            app.path = '';
-            app.fs = null;
         }
 
         // 返回接口

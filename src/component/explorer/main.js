@@ -12,7 +12,8 @@ define(
             _handler: handler, // 事件句柄
             _dirs: [], // 目录历史队列
             _currentIndex: -1, // 当前目录在历史队列的位置
-            _currentList: null // 当前列表中的数据
+            _currentList: null, // 当前列表中的数据
+            _directoryStatus: {} // 目录打开状态
         };
 
         // 绑定事件上下文
@@ -28,14 +29,17 @@ define(
         // 外部接口
         /**
          * 初始化
-         * @param {Object} fs 文件句柄
-         * @param {string} container 容器筛选仪
-         * @param {Function} callback 回调函数
+         * @param {Object} param 初始化对象
+         * @param {Object} param.fs 文件句柄
+         * @param {string} param.container 容器筛选仪
+         * @param {Function} param.callback 回调函数
+         * @param {Object} param.treeStatus 目录打开状态
          */
-        exports.initialize = function (fs, container, callback) {
-            this._fs = fs;
-            this._container = container;
-            this._callback = callback;
+        exports.initialize = function (param) {
+            this._fs = param.fs;
+            this._container = param.container;
+            this._callback = param.callback;
+            this._directoryStatus = param.treeStatus;
             this._dirs = [];
             this._currentIndex = 0;
             // 初始化插件
@@ -182,6 +186,21 @@ define(
                 readDirectory(evt.path, exports._ui.filelist.show, true);
                 util.screen.find('.explorer input[type=text]')[1].value = '';
             }
+            else if (evt.type === 'tree-toggle') {
+                if (evt.show) {
+                    exports._directoryStatus[evt.path] = true;
+                }
+                else if (exports._directoryStatus[evt.path]) {
+                    delete exports._directoryStatus[evt.path];
+                }
+                if (typeof exports._callback === 'function') {
+                    exports._callback({
+                        type: 'log',
+                        key: 'explorer-tree-status',
+                        content: exports._directoryStatus
+                    });
+                }
+            }
         }
 
         /**
@@ -281,7 +300,10 @@ define(
             var key = '';
             if (works.length === 0) {
                 // 递归出口
-                callback(tree);
+                callback({
+                    tree: tree,
+                    status: exports._directoryStatus
+                });
             }
             else {
                 // 写入目录

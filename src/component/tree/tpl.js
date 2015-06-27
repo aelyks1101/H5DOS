@@ -1,7 +1,7 @@
 define(['doT'], function (doT) {
     var fileBtn = 'data-com="tree" data-cmd="file" data-path="{{=it.fullPath}}"';
     var folderBtn = 'data-com="tree" data-cmd="folder" data-path="{{=it.fullPath}}"';
-    var toggleBtn = 'data-com="tree" data-cmd="toggle"';
+    var toggleBtn = 'data-com="tree" data-cmd="toggle" data-path="{{=it.fullPath}}"';
     var obj = {
         'file': [
             '<div class="label" ' + fileBtn + '>',
@@ -10,8 +10,9 @@ define(['doT'], function (doT) {
             '</div>'
         ],
         'directory': [
-            '<div class="folder hideChildren">',
-            '<div class="iconfont" ' + toggleBtn + '>&#xe605;</div>',
+            '<div class="folder {{=(it.open?"":"hideChildren")}}">',
+            '<div class="iconfont" ' + toggleBtn + '>',
+            '{{=(it.open?"&#xe607;":"&#xe605;")}}</div>',
             '<span class="label" ' + folderBtn + '>{{=it.name}}</span>',
             '{{if(it.children.length>0){}}',
             '<div class="children">',
