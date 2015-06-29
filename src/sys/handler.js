@@ -135,7 +135,12 @@ define(function (require) {
                         me.app[app](evt.fullPath, me.core, me.util);
                     }
                     else {
-                        openApp(app, me.core._path, evt.name, me.core._fs);
+                        openApp(
+                            app,
+                            me.util.getFilePath(evt.fullPath),
+                            evt.fullPath,
+                            me.core._fs
+                        );
                     }
                 }
                 else {

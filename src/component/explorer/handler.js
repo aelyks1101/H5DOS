@@ -31,17 +31,15 @@ define(function (require) {
                 com._handler.click(evt);
             }
             else if (data.com === 'explorer') {
-                if (data.cmd === 'prev') {
-                    this.previousDirectory();
-                }
-                else if (data.cmd === 'next') {
-                    this.nextDirectory();
-                }
-                else if (data.cmd === 'up') {
-                    this.fatherDirectory();
-                }
-                else if (data.cmd === 'createfolder') {
-                    this.createFolder('create');
+                switch (data.cmd) {
+                    case 'prev': this.previousDirectory();break;
+                    case 'next': this.nextDirectory();break;
+                    case 'up': this.fatherDirectory();break;
+                    case 'createfolder': this.createFolder('create');break;
+                    case 'addFavorite': this.addFavorite();break;
+                    case 'removeFavorite': this.removeFavorite(data.path);break;
+                    case 'openFavorite': this.readDirectory(data.path);break;
+                    default: break;
                 }
             }
         }

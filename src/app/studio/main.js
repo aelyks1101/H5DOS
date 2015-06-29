@@ -60,7 +60,8 @@ define(
                 fs: fs,
                 container: null,
                 callback: uiCallback,
-                treeStatus: app.record['explorer-tree-status']
+                treeStatus: app.record['explorer-tree-status'],
+                favoriteDirectory: app.record['explorer-favorite-directory']
             });
             ui.menu.initialize('.menu', uiCallback);
             ui.editor = ui.ace.edit(util.screen.find('.editor')[0]);
@@ -71,7 +72,7 @@ define(
             ui.editor.focus();
             // 显示ui组件
             ui.menu.show(config);
-            ui.explorer.show({});
+            ui.explorer.show({defaultPath: path});
             showCode();
         }
 

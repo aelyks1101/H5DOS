@@ -19,13 +19,41 @@
         border-bottom: 1px solid #9A9A9A;
     }
     .explorer-right {
-        margin-left: 200px;
+        margin-left: 250px;
         height: 100%;
         overflow: auto;
     }
+    .explorer-favorite {
+        font-size: 14px;
+        color: #000;
+        padding-left: 10px;
+        padding-top: 5px;
+        .iconfont {
+            display: inline-block;
+            margin-right: 5px;
+            color: #F66416;
+            cursor: pointer;
+        }
+        .iconfont:hover {
+            color: #FFCC97;
+        }
+        .iconfont:active {
+            color: #D43317;
+        }
+        .favorite-box {
+            border-bottom: 1px solid #9A9A9A;
+            padding-bottom: 5px;
+            span {
+                cursor: pointer;
+            }
+            span:hover {
+                color: #7AB1E8;
+            }
+        }
+    }
     .explorer-left {
         float: left;
-        width: 200px;
+        width: 250px;
         height: 100%;
         border-right: 1px solid #9A9A9A;
         overflow: auto;

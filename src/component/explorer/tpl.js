@@ -1,5 +1,9 @@
 define(['doT'], function (doT) {
     var ds = ' onselectstart="return false;" data-com="explorer" ';
+    var favbtn = ' data-com="explorer" data-cmd="removeFavorite"'
+        + 'data-path="{{=it.data[n].path}}"';
+    var favPath = ' data-com="explorer" data-cmd="openFavorite"'
+        + 'data-path="{{=it.data[n].path}}"';
     var obj = {
         main: [
             '<div class="explorer">',
@@ -13,11 +17,14 @@ define(['doT'], function (doT) {
             '<div' + ds + 'data-cmd="createfolder" title="Alt + N" class="iconfont">',
             '&#xe600;</div>',
             '<input type="text"/>',
-            '<div' + ds + 'class="iconfont">&#xe602;</div>',
+            '<div' + ds + 'data-cmd="addFavorite" class="iconfont">&#xe602;</div>',
             '<div' + ds + 'class="iconfont close">&#xe60a;</div>',
             '</div>',
             '<div class="explorer-main">',
-            '<div class="explorer-left"></div>',
+            '<div class="explorer-left">',
+            '<div class="explorer-favorite"></div>',
+            '<div class="explorer-tree"></div>',
+            '</div>',
             '<div class="explorer-right"></div>',
             '</div>',
             '<div class="explorer-foot">',
@@ -33,6 +40,18 @@ define(['doT'], function (doT) {
             '<div class="iconfont">&#xe605</div>',
             '<input type="text" data-com="explorer" data-cmd="foldername"/>',
             '</td></tr>'
+        ],
+        favoriteFolder: [
+            '{{if(it.data.length>0){}}',
+            '<div class="favorite-box">',
+            '{{for(var n=0;n<it.data.length;n++){}}',
+            '<div>',
+            '<div class="iconfont"' + favbtn + '>&#xe602;</div>',
+            '<span' + favPath + '>{{=it.data[n].name}}</span>',
+            '</div>',
+            '{{}}}',
+            '</div>',
+            '{{}}}'
         ]
     };
     for (var key in obj) {

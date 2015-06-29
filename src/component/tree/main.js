@@ -32,13 +32,7 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
      * @param {Object} data 模板渲染数据
      */
     exports.show = function (data) {
-        var html = produceHTML(data.tree, data.status);
-        if (exports._container != null) {
-            util.screen.find(exports._container).html(html);
-        }
-        else {
-            util.screen.html(html);
-        }
+        util.screen.find(exports._container).html(produceHTML(data.tree, data.status));
     };
 
     /**

@@ -13,7 +13,8 @@ define(
             _dirs: [], // 目录历史队列
             _currentIndex: -1, // 当前目录在历史队列的位置
             _currentList: null, // 当前列表中的数据
-            _directoryStatus: {} // 目录打开状态
+            _directoryStatus: {}, // 目录打开状态
+            _favoriteDirectory: [] // 目录收藏夹
         };
 
         // 绑定事件上下文
@@ -34,16 +35,18 @@ define(
          * @param {string} param.container 容器筛选仪
          * @param {Function} param.callback 回调函数
          * @param {Object} param.treeStatus 目录打开状态
+         * @param {Object} param.favoriteDirectory 目录收藏夹
          */
         exports.initialize = function (param) {
             this._fs = param.fs;
             this._container = param.container;
             this._callback = param.callback;
-            this._directoryStatus = param.treeStatus;
+            this._directoryStatus = param.treeStatus || {};
+            this._favoriteDirectory = param.favoriteDirectory || [];
             this._dirs = [];
             this._currentIndex = 0;
             // 初始化插件
-            this._ui.tree.initialize('.explorer-left', uiCallback);
+            this._ui.tree.initialize('.explorer-tree', uiCallback);
             this._ui.filelist.initialize('.explorer-right', uiCallback);
         };
 
@@ -52,17 +55,82 @@ define(
          * @param {Object} data 模板渲染数据
          */
         exports.show = function (data) {
-            // 导入原始模板
-            var html = tpl.main(data);
-            if (exports._container != null) {
-                util.screen.find(exports._container).append(html);
+            util.screen.find(exports._container).html(tpl.main(data));
+            readTree(['/'], {}, this._ui.tree.show);
+            readDirectory(data.defaultPath || '/', this._ui.filelist.show, true);
+            showFavorite();
+        };
+
+        /**
+         * 跳转到某个目录
+         * @param {string} path 目录绝对地址
+         */
+        exports.readDirectory = function (path) {
+            readDirectory(path, this._ui.filelist.show, true);
+            util.screen.find('.explorer input[type=text]')[1].value = '';
+        };
+
+        /**
+         * 跳转到上一个历史记录
+         */
+        exports.previousDirectory = function () {
+            this._currentIndex--;
+            if (this._currentIndex > -1) {
+                readDirectory(this._dirs[this._currentIndex], this._ui.filelist.show);
             }
             else {
-                util.screen.append(html);
+                this._currentIndex = 0;
             }
-            // 导入组件模板
-            readTree(['/'], {}, this._ui.tree.show);
-            readDirectory('/', this._ui.filelist.show, true);
+            var btns = util.screen.find('.explorer-header div');
+            if (this._currentIndex <= 0) {
+                btns.eq(0).addClass('disable');
+            }
+            if (this._currentIndex < this._dirs.length - 1) {
+                btns.eq(1).removeClass('disable');
+            }
+            util.screen.find('.explorer input[type=text]')[1].value = '';
+        };
+
+        /**
+         * 回滚到下一个历史记录
+         */
+        exports.nextDirectory = function () {
+            this._currentIndex++;
+            if (this._currentIndex < this._dirs.length) {
+                readDirectory(this._dirs[this._currentIndex], this._ui.filelist.show);
+            }
+            else {
+                this._currentIndex = this._dirs.length - 1;
+            }
+            var btns = util.screen.find('.explorer-header div');
+            if (this._currentIndex > 0) {
+                btns.eq(0).removeClass('disable');
+            }
+            if (this._currentIndex === this._dirs.length - 1) {
+                btns.eq(1).addClass('disable');
+            }
+            util.screen.find('.explorer input[type=text]')[1].value = '';
+        };
+
+        /**
+         * 跳到上一层目录
+         */
+        exports.fatherDirectory = function () {
+            if (
+                this._dirs.length > 0
+                && this._currentIndex < this._dirs.length
+                && this._currentIndex > -1
+            ) {
+                var path = this._dirs[this._currentIndex];
+                path = path.split('/');
+                path.pop();
+                path = path.join('/');
+                path = path === '' ? '/' : path;
+                if (path !== this._dirs[this._currentIndex]) {
+                    readDirectory(path, this._ui.filelist.show, true);
+                }
+            }
+            util.screen.find('.explorer input[type=text]')[1].value = '';
         };
 
         /**
@@ -101,62 +169,45 @@ define(
         };
 
         /**
-         * 跳转到上一个历史记录
+         * 收藏文件夹
          */
-        exports.previousDirectory = function () {
-            this._currentIndex--;
-            if (this._currentIndex > -1) {
-                readDirectory(this._dirs[this._currentIndex], this._ui.filelist.show);
-            }
-            else {
-                this._currentIndex = 0;
-            }
-            var btns = util.screen.find('.explorer-header div');
-            if (this._currentIndex <= 0) {
-                btns.eq(0).addClass('disable');
-            }
-            if (this._currentIndex < this._dirs.length - 1) {
-                btns.eq(1).removeClass('disable');
-            }
-        };
-
-        /**
-         * 回滚到下一个历史记录
-         */
-        exports.nextDirectory = function () {
-            this._currentIndex++;
-            if (this._currentIndex < this._dirs.length) {
-                readDirectory(this._dirs[this._currentIndex], this._ui.filelist.show);
-            }
-            else {
-                this._currentIndex = this._dirs.length - 1;
-            }
-            var btns = util.screen.find('.explorer-header div');
-            if (this._currentIndex > 0) {
-                btns.eq(0).removeClass('disable');
-            }
-            if (this._currentIndex === this._dirs.length - 1) {
-                btns.eq(1).addClass('disable');
-            }
-        };
-
-        /**
-         * 跳到上一层目录
-         */
-        exports.fatherDirectory = function () {
-            if (
-                this._dirs.length > 0
-                && this._currentIndex < this._dirs.length
-                && this._currentIndex > -1
-            ) {
-                var path = this._dirs[this._currentIndex];
-                path = path.split('/');
-                path.pop();
-                path = path.join('/');
-                path = path === '' ? '/' : path;
-                if (path !== this._dirs[this._currentIndex]) {
-                    readDirectory(path, this._ui.filelist.show, true);
+        exports.addFavorite = function () {
+            var path = this._dirs[this._currentIndex];
+            if (path !== '/' && this._favoriteDirectory.indexOf(path) < 0) {
+                this._favoriteDirectory.push(path);
+                if (typeof this._callback === 'function') {
+                    this._callback({
+                        type: 'log',
+                        key: 'explorer-favorite-directory',
+                        content: this._favoriteDirectory
+                    });
                 }
+                showFavorite();
+            }
+        };
+
+        /**
+         * 删除收藏夹
+         * @param {string} path 目录绝对路径
+         */
+        exports.removeFavorite = function (path) {
+            if (path !== '/' && this._favoriteDirectory.indexOf(path) > -1) {
+                var arr = [];
+                for (var n = 0; n < this._favoriteDirectory.length; n++) {
+                    if (path === this._favoriteDirectory[n]) {
+                        continue;
+                    }
+                    arr.push(this._favoriteDirectory[n]);
+                }
+                this._favoriteDirectory = arr;
+                if (typeof this._callback === 'function') {
+                    this._callback({
+                        type: 'log',
+                        key: 'explorer-favorite-directory',
+                        content: this._favoriteDirectory
+                    });
+                }
+                showFavorite();
             }
         };
 
@@ -179,8 +230,8 @@ define(
         function uiCallback(evt) {
             if (evt.type === 'tree-file') {
                 var path = ('/' + util.getFilePath(evt.path)).replace('//', '/');
-                util.screen.find('.explorer input[type=text]')[1].value = evt.path;
                 readDirectory(path, exports._ui.filelist.show, true);
+                util.screen.find('.explorer input[type=text]')[1].value = evt.path;
             }
             else if (evt.type === 'tree-folder') {
                 readDirectory(evt.path, exports._ui.filelist.show, true);
@@ -201,6 +252,23 @@ define(
                     });
                 }
             }
+        }
+
+        /**
+         * 显示收藏夹
+         */
+        function showFavorite() {
+            var arr = [];
+            for (var n = 0; n < exports._favoriteDirectory.length; n++) {
+                var tmp = exports._favoriteDirectory[n].split('/');
+                arr.push({
+                    isDirectory: true,
+                    path: exports._favoriteDirectory[n],
+                    name: tmp[tmp.length - 1]
+                });
+            }
+            var html = tpl.favoriteFolder({data: arr.sort(util.fileSortByChar)});
+            util.screen.find('.explorer .explorer-favorite').html(html);
         }
 
         /**
@@ -260,7 +328,6 @@ define(
             exports._fs.dir(path, function (evt) {
                 if (!evt.error) {
                     arr = evt.sort(util.fileSortByChar);
-                    util.screen.find('.explorer input[type=text]')[0].value = path;
                     if (record) {
                         recordDirectory(path);
                     }
@@ -270,6 +337,7 @@ define(
             function readMetadata(n) {
                 if (n === arr.length) {
                     exports._currentList = arr;
+                    util.screen.find('.explorer input[type=text]')[0].value = path;
                     callback({data: arr});
                 }
                 else {

@@ -21,7 +21,7 @@ define(function (require) {
         },
         // 系统启动自运行
         autorun: [
-            'b.js'
+            '/src/efg/main.js'
         ]
     };
 });
