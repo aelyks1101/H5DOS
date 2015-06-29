@@ -28,8 +28,8 @@ define(['doT'], function (doT) {
             '<div class="explorer-right"></div>',
             '</div>',
             '<div class="explorer-foot">',
-            '<select></select>',
             'file name:<input type="text"/>',
+            '<select data-com="explorer" data-cmd="directorFilter"></select>',
             '<input type="button" value="OK"/>',
             '<input type="button" value="Cancel"/>',
             '</div>',
@@ -51,6 +51,11 @@ define(['doT'], function (doT) {
             '</div>',
             '{{}}}',
             '</div>',
+            '{{}}}'
+        ],
+        typeFilter: [
+            '{{for(var n=0;n<it.types.length;n++){}}',
+            '<option value="{{=it.types[n]}}">*.{{=it.types[n]}}</option>',
             '{{}}}'
         ]
     };

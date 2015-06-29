@@ -7,12 +7,12 @@ define(
             _util: util, // 工具集
             _ui: ui, // ui插件
             _fs: null, // 文件句柄
-            _container: null, // 容器筛选仪
             _callback: null, // 回调函数
             _handler: handler, // 事件句柄
             _dirs: [], // 目录历史队列
             _currentIndex: -1, // 当前目录在历史队列的位置
             _currentList: null, // 当前列表中的数据
+            _directoryFilter: '*', // 列表框的滤镜
             _directoryStatus: {}, // 目录打开状态
             _favoriteDirectory: [] // 目录收藏夹
         };
@@ -55,7 +55,7 @@ define(
          * @param {Object} data 模板渲染数据
          */
         exports.show = function (data) {
-            util.screen.find(exports._container).html(tpl.main(data));
+            util.screen.append(tpl.main(data))
             readTree(['/'], {}, this._ui.tree.show);
             readDirectory(data.defaultPath || '/', this._ui.filelist.show, true);
             showFavorite();
@@ -65,8 +65,8 @@ define(
          * 跳转到某个目录
          * @param {string} path 目录绝对地址
          */
-        exports.readDirectory = function (path) {
-            readDirectory(path, this._ui.filelist.show, true);
+        exports.readDirectory = function (path, record) {
+            readDirectory(path, this._ui.filelist.show, record);
             util.screen.find('.explorer input[type=text]')[1].value = '';
         };
 
@@ -325,6 +325,7 @@ define(
          */
         function readDirectory(path, callback, record) {
             var arr = [];
+            var types = ['*'];
             exports._fs.dir(path, function (evt) {
                 if (!evt.error) {
                     arr = evt.sort(util.fileSortByChar);
@@ -338,7 +339,11 @@ define(
                 if (n === arr.length) {
                     exports._currentList = arr;
                     util.screen.find('.explorer input[type=text]')[0].value = path;
-                    callback({data: arr});
+                    var select = util.screen.find('.explorer select');
+                    select.html(tpl.typeFilter({types: types}))
+                        .val(exports._directoryFilter);
+                    exports._directoryFilter = select[0].value;
+                    callback({data: arr, filter: exports._directoryFilter});
                 }
                 else {
                     var info = {
@@ -348,6 +353,9 @@ define(
                         name: arr[n].name,
                         type: arr[n].isFile ? util.getFileType(arr[n].name) : ''
                     };
+                    if (types.indexOf(info.type) < 0 && info.type !== '') {
+                        types.push(info.type);
+                    }
                     arr[n].getMetadata(function (e) {
                         info.size = util.getFileSize(e.size);
                         info.time = e.modificationTime;

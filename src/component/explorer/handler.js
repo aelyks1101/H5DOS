@@ -38,9 +38,16 @@ define(function (require) {
                     case 'createfolder': this.createFolder('create');break;
                     case 'addFavorite': this.addFavorite();break;
                     case 'removeFavorite': this.removeFavorite(data.path);break;
-                    case 'openFavorite': this.readDirectory(data.path);break;
+                    case 'openFavorite': this.readDirectory(data.path, true);break;
                     default: break;
                 }
+            }
+        },
+        change: function (evt) {
+            var data = evt.target.dataset;
+            if (data.com === 'explorer' && data.cmd === 'directorFilter') {
+                this._directoryFilter = evt.target.value;
+                this.readDirectory(this._dirs[this._currentIndex], false);
             }
         }
     };
