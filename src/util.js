@@ -224,6 +224,22 @@ define(['config'], function (config) {
             return type;
         },
         /**
+         * 获取文件的名称，从绝对路径中
+         * @param {string} str 文件绝对路径
+         * @return {string} 文件名
+         */
+        getFileName: function (str) {
+            var fn = '';
+            if (str.indexOf('/') < 0) {
+                fn = str;
+            }
+            else {
+                var arr = str.split('/');
+                fn = arr[arr.length - 1];
+            }
+            return fn;
+        },
+        /**
          * 获取文件的路径
          * @param {string} path 绝对路径
          * @return {string} 文件的路径

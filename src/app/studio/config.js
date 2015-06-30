@@ -1,5 +1,6 @@
 define(['./language'], function (lng) {
     return {
+        language: lng,
         menu: [
             {
                 label: lng.menu.file,

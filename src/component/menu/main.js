@@ -2,10 +2,10 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
 
     // 接口
     var exports = {
-        _util: util, // 工具集
+        _util: null, // 工具集
         _container: null, // 容器筛选仪
         _callback: null, // 回调函数
-        _handler: handler // 事件句柄
+        _handler: null // 事件句柄
     };
 
     // 绑定事件上下文
@@ -25,6 +25,8 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
     exports.initialize = function (container, callback) {
         this._container = container;
         this._callback = callback;
+        this._util = util;
+        this._handler = handler;
     };
     /**
      * 显示，导入到screen
@@ -39,6 +41,8 @@ define(['util', './tpl', './handler'], function (util, tpl, handler) {
     exports.dispose = function () {
         this._container = null;
         this._callback = null;
+        this._util = null;
+        this._handler = null;
     };
 
     // 返回实例

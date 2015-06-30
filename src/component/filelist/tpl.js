@@ -13,6 +13,8 @@ define(['doT', './language'], function (doT, lng) {
         '</tr>',
         '{{if(it.data.length){}}',
         '{{for(var n=0;n<it.data.length;n++){}}',
+        '{{if(it.data[n].isFile&&!it.showfile){}}',
+        '{{continue;}}}',
         '{{if(it.data[n].type!==""&&it.data[n].type!==it.filter&&it.filter!=="*"){}}',
         '{{continue;}}}',
         '<tr>',

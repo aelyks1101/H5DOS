@@ -7,6 +7,17 @@ define(['config'], function (config) {
                     newFile: 'New File',
                     openFile: 'Open File',
                     edit: 'Edit'
+                },
+                explorer: {
+                    select: 'Select',
+                    save: 'Save',
+                    open: 'Open',
+                    cancel: 'Cancel',
+                    filename: {
+                        save: 'File',
+                        open: 'File',
+                        select: 'Folder'
+                    }
                 }
             }
         };

@@ -14,7 +14,7 @@ define(
             // 文件操作句柄
             fs: null,
             // ui操作句柄
-            ui: ui,
+            ui: null,
             // 退出编辑器
             quit: function () {
                 quit();
@@ -38,6 +38,7 @@ define(
          */
         function initialize(path, file, fs, record) {
             // 导入单例数据
+            app.ui = ui;
             app.path = path;
             app.fs = fs;
             app.record = record;
@@ -72,7 +73,11 @@ define(
             ui.editor.focus();
             // 显示ui组件
             ui.menu.show(config);
-            ui.explorer.show({defaultPath: path});
+            ui.explorer.show({
+                type: 'save',
+                defaultPath: path,
+                language: config.language.explorer
+            });
             showCode();
         }
 
@@ -96,10 +101,22 @@ define(
         /**
          * ui回调
          * @param {Object} evt 事件对象
+         * @param {string} evt.com 事件触发的component名称
+         * @param {string} evt.type 事件类型
          */
         function uiCallback(evt) {
-            if (evt.type === 'log') {
-                app.record[evt.key] = evt.content;
+            var str = '';
+            switch (evt.type) {
+                case 'log': app.record[evt.key] = evt.content;break;
+                default:
+                    for (var key in evt) {
+                        if (key.indexOf('_') > -1) {
+                            continue;
+                        }
+                        str += key + ':' + evt[key] + '\n';
+                    }
+                    alert(str);
+                    break;
             }
         }
 
@@ -114,30 +131,30 @@ define(
          * 卸载
          */
         function dispose() {
-            // var str = JSON.stringify(app.record);
             var file = app.record.__logfile;
             delete app.record.__logfile;
             app.fs.write(file, {data: new Blob([JSON.stringify(app.record)])}, release);
             function release() {
+                var key = '';
+                for (key in ui) {
+                    if (typeof ui[key].dispose === 'function') {
+                        ui[key].dispose();
+                    }
+                }
                 util.displayScreen(false);
                 util.screen.removeClass('app-studio');
                 util.screen.html('');
                 util.onKeyDown();
-                var key = '';
                 for (key in handler) {
                     if (key.indexOf('_') === 0) {
                         continue;
                     }
                     util.screen.unbind(key);
                 }
-                for (key in ui) {
-                    if (typeof ui[key].dispose === 'function') {
-                        ui[key].dispose();
-                    }
-                }
                 app.path = '';
                 app.fs = null;
                 app.record = null;
+                app.ui = null;
             }
         }
 

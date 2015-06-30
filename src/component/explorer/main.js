@@ -1,20 +1,32 @@
+/**
+ * 文件系统图形化选择器
+ * 主要负责：
+ * 1. 选择一个文件，返回文件路径，mode=open
+ * 2. 保存一个文件，返回文件路径，mode=save，这种模式跟open差不多
+ * 3. 选择一个文件夹，返回文件夹路径，mode=select
+ * 本组件同时负责检查返回路径的有效性。
+ * 如果是open，文件必存在；
+ * 如果是save，会标识文件是否存在；
+ * 如果是select，目录必存在。
+ */
 define(
     ['util', './tpl', './ui', './handler'],
     function (util, tpl, ui, handler) {
 
         // 单例数据
         var exports = {
-            _util: util, // 工具集
-            _ui: ui, // ui插件
+            _util: null, // 工具集
+            _ui: null, // ui插件
             _fs: null, // 文件句柄
             _callback: null, // 回调函数
-            _handler: handler, // 事件句柄
+            _handler: null, // 事件句柄
             _dirs: [], // 目录历史队列
             _currentIndex: -1, // 当前目录在历史队列的位置
             _currentList: null, // 当前列表中的数据
             _directoryFilter: '*', // 列表框的滤镜
             _directoryStatus: {}, // 目录打开状态
-            _favoriteDirectory: [] // 目录收藏夹
+            _favoriteDirectory: [], // 目录收藏夹
+            _mode: '' // 当前工作模式，open打开文件，save保存文件，select选择文件夹
         };
 
         // 绑定事件上下文
@@ -38,6 +50,9 @@ define(
          * @param {Object} param.favoriteDirectory 目录收藏夹
          */
         exports.initialize = function (param) {
+            this._util = util;
+            this._ui = ui;
+            this._handler = handler;
             this._fs = param.fs;
             this._container = param.container;
             this._callback = param.callback;
@@ -55,15 +70,86 @@ define(
          * @param {Object} data 模板渲染数据
          */
         exports.show = function (data) {
-            util.screen.append(tpl.main(data))
+            this._mode = data.type || 'open';
+            util.screen.append(tpl.main(data));
             readTree(['/'], {}, this._ui.tree.show);
             readDirectory(data.defaultPath || '/', this._ui.filelist.show, true);
             showFavorite();
+            setTimeout(focus, 200);
+            function focus() {
+                util.screen.find('.explorer input[type=text]')[1].focus();
+            }
+        };
+
+        /**
+         * 隐藏，不销毁
+         */
+        exports.hide = function () {
+            util.screen.find('.explorer').remove();
+            if (typeof this._callback === 'function') {
+                this._callback({
+                    type: 'cancel',
+                    com: 'explorer'
+                });
+            }
+        };
+
+        /**
+         * 确认，点击确定按钮后触发
+         */
+        exports.submit = function () {
+            var me = this;
+            var inputs = util.screen.find(' input[type=text]');
+            var path = inputs[0].value;
+            var name = inputs[1].value;
+            var fullpath = (path + '/' + name).replace(/\/\//g,'/');
+            if (me._mode === 'select') {
+                me._fs.cd(name, mustExist);
+            }
+            else if (me._mode === 'open') {
+                if (name.length > 0 && util.checkFileName(name)) {
+                    me._fs.open(fullpath, mustExist);
+                }
+                else {
+                    inputs.eq(1).addClass('filename-error').focus();
+                }
+            }
+            else if (me._mode === 'save') {
+                if (name.length > 0 && util.checkFileName(name)) {
+                    me._fs.open(fullpath, checkExist);
+                }
+                else {
+                    inputs.eq(1).addClass('filename-error').focus();
+                }
+            }
+            function checkExist(evt) {
+                me._callback({
+                    type: me._mode,
+                    com: 'explorer',
+                    path: fullpath,
+                    exist: evt.error === true ? false : true
+                });
+                me.hide();
+            }
+            function mustExist(evt) {
+                if (evt.error) {
+                    inputs.eq(1).addClass('filename-error').focus();
+                }
+                else {
+                    me._callback({
+                        type: me._mode,
+                        com: 'explorer',
+                        path: evt.fullPath
+                    });
+                    me.hide();
+                }
+            }
         };
 
         /**
          * 跳转到某个目录
          * @param {string} path 目录绝对地址
+         * @param {boolean} record 是否记录到历史记录中
          */
         exports.readDirectory = function (path, record) {
             readDirectory(path, this._ui.filelist.show, record);
@@ -213,13 +299,27 @@ define(
 
         /**
          * 卸载
+         * 此方法只能从外部调用，不能自己销毁自己，因为外部有ui连接到exports对象
+         * 内部不负责断开这个连接
          */
         exports.dispose = function () {
+            for (var key in this._ui) {
+                if (typeof this._ui[key].dispose === 'function') {
+                    this._ui[key].dispose();
+                }
+            }
+            this._util = null;
+            this._ui = null;
             this._fs = null;
-            this._container = null;
             this._callback = null;
+            this._handler = null;
             this._dirs = [];
-            this._currentIndex = 0;
+            this._currentIndex = -1;
+            this._currentList = null;
+            this._directoryFilter = '*';
+            this._directoryStatus = {};
+            this._favoriteDirectory = [];
+            util.screen.find('.explorer').remove();
         };
 
         // 内部方法
@@ -231,7 +331,8 @@ define(
             if (evt.type === 'tree-file') {
                 var path = ('/' + util.getFilePath(evt.path)).replace('//', '/');
                 readDirectory(path, exports._ui.filelist.show, true);
-                util.screen.find('.explorer input[type=text]')[1].value = evt.path;
+                util.screen.find('.explorer input[type=text]')[1].value =
+                    util.getFileName(evt.path);
             }
             else if (evt.type === 'tree-folder') {
                 readDirectory(evt.path, exports._ui.filelist.show, true);
@@ -337,13 +438,21 @@ define(
             });
             function readMetadata(n) {
                 if (n === arr.length) {
-                    exports._currentList = arr;
-                    util.screen.find('.explorer input[type=text]')[0].value = path;
+                    var inputs = util.screen.find('.explorer input[type=text]');
                     var select = util.screen.find('.explorer select');
+                    exports._currentList = arr;
+                    inputs[0].value = path;
+                    if (exports._mode === 'select') {
+                        inputs[1].value = path;
+                    }
                     select.html(tpl.typeFilter({types: types}))
                         .val(exports._directoryFilter);
                     exports._directoryFilter = select[0].value;
-                    callback({data: arr, filter: exports._directoryFilter});
+                    callback({
+                        data: arr,
+                        filter: exports._directoryFilter,
+                        showfile: exports._mode === 'select' ? false : true
+                    });
                 }
                 else {
                     var info = {
@@ -378,7 +487,8 @@ define(
                 // 递归出口
                 callback({
                     tree: tree,
-                    status: exports._directoryStatus
+                    status: exports._directoryStatus,
+                    showfile: exports._mode === 'select' ? false : true
                 });
             }
             else {

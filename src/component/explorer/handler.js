@@ -14,10 +14,20 @@ define(function (require) {
                 else if (evt.code === 78 && evt.alt) {
                     this.createFolder('create');
                 }
+                else if (evt.code === 13) {
+                    this.submit();
+                }
             }
             else if (evt.target.dataset.com === 'explorer') {
-                if (evt.target.dataset.cmd === 'foldername' && evt.code === 13) {
+                var data = evt.target.dataset;
+                if (data.cmd === 'foldername' && evt.code === 13) {
                     this.createFolder({type: 'create', path: evt.target.value});
+                }
+                else if (data.cmd === 'location' && evt.code === 13) {
+                    this.readDirectory(evt.target.value, true);
+                }
+                else if (data.cmd === 'filename' && evt.code === 13) {
+                    this.submit();
                 }
             }
         },
@@ -32,6 +42,10 @@ define(function (require) {
             }
             else if (data.com === 'explorer') {
                 switch (data.cmd) {
+                    case 'open':
+                    case 'save':
+                    case 'select': this.submit();break;
+                    case 'close': this.hide();break;
                     case 'prev': this.previousDirectory();break;
                     case 'next': this.nextDirectory();break;
                     case 'up': this.fatherDirectory();break;
