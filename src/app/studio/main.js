@@ -1,23 +1,30 @@
 /**
- * 简易编辑器主接口
+ * 编辑器主接口
  */
 define(
-    ['util', './ui', './handler', './template', './config'],
-    function (util, ui, handler, template, config) {
+    ['util', './cmd/main', './ui', './handler', './template', './config'],
+    function (util, cmd, ui, handler, template, config) {
 
         // 单例对象
         var app = {
-            // 状态记录仪器，存储在本地文件中
-            record: null,
-            // 当前操作目录
-            path: '',
-            // 文件操作句柄
-            fs: null,
-            // ui操作句柄
-            ui: null,
-            // 退出编辑器
-            quit: function () {
-                quit();
+            record: null, // 状态记录仪器，存储在本地文件中
+            path: '', // 当前操作目录
+            ui: null, // ui接口，主要用于handler发放事件方便
+            fs: null, // 文件操作句柄
+            /**
+             * 已打开的文件的数据结构，key为文件fullPath，值为:
+             *  {
+             *      code: '', 文件内容
+             *      type: '', 文件类型
+             *      name: '', 文件名
+             *      path: '', 文件路径
+             *      save: boolean, 是否未保存
+             *  }
+             */
+            codes: {},
+            cmd: '', // 将要执行的命令
+            hotkey: function (evt) {
+                hotkey(evt);
             }
         };
 
@@ -27,6 +34,12 @@ define(
                 continue;
             }
             handler[key] = util.bind(app, handler[key]);
+        }
+        for (var method in cmd) {
+            if (typeof cmd[method] !== 'function') {
+                continue;
+            }
+            cmd[method] = util.bind(app, cmd[method]);
         }
 
         /**
@@ -65,37 +78,12 @@ define(
                 favoriteDirectory: app.record['explorer-favorite-directory']
             });
             ui.menu.initialize('.menu', uiCallback);
-            ui.editor = ui.ace.edit(util.screen.find('.editor')[0]);
-            ui.editor.$blockScrolling = Infinity;
-            ui.editor.setTheme('ace/theme/monokai');
-            ui.editor.getSession().setMode('ace/mode/javascript');
-            ui.editor.setFontSize(18);
-            ui.editor.focus();
+            ui.editor.initialize(util.screen.find('.editor')[0]);
             // 显示ui组件
             ui.menu.show(config);
-            ui.explorer.show({
-                type: 'save',
-                defaultPath: path,
-                language: config.language.explorer
-            });
-            showCode();
-        }
-
-        /**
-         * 显示代码
-         * @param {string} code 代码串，格式化好的
-         */
-        function showCode(code) {
-            code = [
-                'function foo(items) {\n',
-                '    heheda;\n',
-                '    var i;\n',
-                '    for (i = 0; i < items.length; i++) {\n',
-                '        alert("Ace Rocks " + items[i]);\n',
-                '    }\n',
-                '}'
-            ].join('');
-            ui.editor.setValue(code, code.length);
+            if (typeof file === 'string' && file.length > 0) {
+                cmd.loadCode(file);
+            }
         }
 
         /**
@@ -107,7 +95,21 @@ define(
         function uiCallback(evt) {
             var str = '';
             switch (evt.type) {
-                case 'log': app.record[evt.key] = evt.content;break;
+                case 'log':
+                    app.record[evt.key] = evt.content;
+                    break;
+                case 'menu-click':
+                    if (typeof cmd[evt.cmd] === 'function') {
+                        cmd[evt.cmd](config.language.explorer);
+                    }
+                case 'open':
+                    if (app.cmd === 'openfile' && evt.com === 'explorer') {
+                        app.cmd = '';
+                        cmd.loadCode(evt.path);
+                    }
+                    break;
+                case 'cancel':
+                    break;
                 default:
                     for (var key in evt) {
                         if (key.indexOf('_') > -1) {
@@ -117,6 +119,33 @@ define(
                     }
                     alert(str);
                     break;
+            }
+        }
+
+        /**
+         * 处理键盘事件
+         * @param {Object} evt 键盘对象
+         */
+        function hotkey(evt) {
+            if (evt.alt && evt.code === 81) {
+                quit();
+            }
+            if (evt.ctrl && evt.code === 83) {
+                // save();
+            }
+            if (evt.alt && evt.code === 78) {
+                // newFile();
+            }
+            if (evt.alt && evt.code === 79) {
+                cmd.openfile(config.language.explorer);
+            }
+            for (var key in app.ui) {
+                if (
+                    app.ui[key]._handler
+                    && typeof app.ui[key]._handler.keydown === 'function'
+                ) {
+                    app.ui[key]._handler.keydown(evt);
+                }
             }
         }
 
@@ -151,10 +180,13 @@ define(
                     }
                     util.screen.unbind(key);
                 }
+                app.ui = null;
                 app.path = '';
                 app.fs = null;
                 app.record = null;
-                app.ui = null;
+                app.codes = {};
+                app.cmd = '';
+                app.hotkey = null;
             }
         }
 

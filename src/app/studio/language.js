@@ -4,9 +4,9 @@ define(['config'], function (config) {
             en: {
                 menu: {
                     file: 'File',
+                    edit: 'Edit',
                     newFile: 'New File',
-                    openFile: 'Open File',
-                    edit: 'Edit'
+                    openFile: 'Open File'
                 },
                 explorer: {
                     select: 'Select',

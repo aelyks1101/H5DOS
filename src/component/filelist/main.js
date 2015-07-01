@@ -1,6 +1,19 @@
 define(['util', './tpl', './handler'], function (util, tpl, handler) {
-
-    // 接口
+    /**
+     * 文件列表组件
+     * 数据结构：{data: []}
+     * 文件元素：
+     *  {
+     *      fullPath: '', // 绝对路径
+     *      isDirectory: boolean, // 是否为目录
+     *      isFile: boolean, // 是否为文件
+     *      name: '', // 名称，不含路径
+     *      type: '', // 文件类型
+     *      size: '', // 文件大小，含单位
+     *      time: Date  // 文件最后修改日期
+     *  }
+     */
+    // 接口对象
     var exports = {
         _util: null, // 工具集
         _container: null, // 容器筛选仪

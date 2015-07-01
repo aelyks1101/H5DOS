@@ -1,6 +1,18 @@
 define(['util', './tpl', './handler'], function (util, tpl, handler) {
-
-    // 接口
+    /**
+     * 文件树
+     * 数据结构：{key: object}
+     * key为文件或目录的绝对路径fullpath，值为文件对象
+     * 文件对象：
+     *  {
+     *      fullPath: '', // 绝对路径
+     *      isDirectory: boolean, // 是否为目录
+     *      isFile: boolean, // 是否为文件
+     *      name: '', // 名称，不含路径
+     *      children: [string] // 如果是目录，这里存放目录中子文件、文件夹的key
+     *  }
+     */
+    // 接口对象
     var exports = {
         _util: null, // 工具集
         _container: null, // 容器筛选仪

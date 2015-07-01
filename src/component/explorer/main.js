@@ -68,6 +68,9 @@ define(
         /**
          * 显示，导入到screen
          * @param {Object} data 模板渲染数据
+         * @param {string} data.type 工作模式，select、open、save
+         * @param {string} data.defaultPath 默认打开路径
+         * @param {Object} data.language 语言包，见app/studio/language.js: .explorer
          */
         exports.show = function (data) {
             this._mode = data.type || 'open';
@@ -329,10 +332,16 @@ define(
          */
         function uiCallback(evt) {
             if (evt.type === 'tree-file') {
+                var input = util.screen.find('.explorer input[type=text]')[1];
                 var path = ('/' + util.getFilePath(evt.path)).replace('//', '/');
-                readDirectory(path, exports._ui.filelist.show, true);
-                util.screen.find('.explorer input[type=text]')[1].value =
-                    util.getFileName(evt.path);
+                var filename = util.getFileName(evt.path);
+                if (input.value === filename) {
+                    exports.submit();
+                }
+                else {
+                    input.value = filename;
+                    readDirectory(path, exports._ui.filelist.show, true);
+                }
             }
             else if (evt.type === 'tree-folder') {
                 readDirectory(evt.path, exports._ui.filelist.show, true);
